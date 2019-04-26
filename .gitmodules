@@ -1,0 +1,3 @@
+[submodule "cFDK"]
+	path = cFDK
+	url = ./cFDK/.git

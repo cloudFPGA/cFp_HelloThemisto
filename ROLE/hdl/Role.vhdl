@@ -621,8 +621,8 @@ begin
           soNrc_meta_TKEEP          =>  poROLE_Nrc_Meta_TKEEP  ,
           soNrc_meta_TLAST          =>  sMetaOutTlastAsVector,
                                      
-          poROL_NRC_Udp_Rx_ports_V        => poROL_Nrc_Udp_Rx_ports,
-          poROL_NRC_Udp_Rx_ports_V_ap_vld => '1'
+          poROL_NRC_Udp_Rx_ports_V        => poROL_Nrc_Udp_Rx_ports
+          --poROL_NRC_Udp_Rx_ports_V_ap_vld => '1'
         );
     
   end generate;

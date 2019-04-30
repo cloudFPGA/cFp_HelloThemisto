@@ -197,11 +197,17 @@ void udp_app_flash (
         //[TODO] ap_uint<1> piSHL_This_MmioPostPktEn,
         //[TODO] ap_uint<1> piSHL_This_MmioCaptPktEn,
 
+        ap_uint<32>             *pi_rank,
+        ap_uint<32>             *pi_size,
         //------------------------------------------------------
         //-- SHELL / This / Udp Interfaces
         //------------------------------------------------------
         stream<UdpWord>     &siSHL_This_Data,
-        stream<UdpWord>     &soTHIS_Shl_Data)
+        stream<UdpWord>     &soTHIS_Shl_Data,
+    stream<NrcMetaStream>   &siNrc_meta,
+    stream<NrcMetaStream>   &soNrc_meta,
+    ap_uint<32>             *po_udp_rx_ports
+    )
 {
 
     /*********************************************************************/
@@ -234,6 +240,13 @@ void udp_app_flash (
     #pragma HLS INTERFACE axis register off port=siSHL_This_Data
     #pragma HLS INTERFACE axis register off port=soTHIS_Shl_Data
 
+#pragma HLS INTERFACE axis register both port=siNrc_meta
+#pragma HLS INTERFACE axis register both port=soNrc_meta
+
+#pragma HLS INTERFACE ap_vld register port=po_udp_rx_ports name=poROL_NRC_Udp_Rx_ports
+#pragma HLS INTERFACE ap_vld register port=pi_rank name=piSMC_ROL_rank
+#pragma HLS INTERFACE ap_vld register port=pi_size name=piSMC_ROL_size
+
 #endif
 
     //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
@@ -244,6 +257,7 @@ void udp_app_flash (
 	//OBSOLETE-20180918 static stream<UdpWord>      sEptToTxp_Data("sEptToTxp_Data");
 
 	static stream<UdpWord>      sRxpToTxp_Data("sRxpToTxP_Data");
+  static stream<NrcMetaStream> sRxtoTx_Meta("sRxtoTx_Meta");
 
     static stream<UdpWord>      sRxpToEsf_Data("sRxpToEsf_Data");
     static stream<UdpWord>      sEsfToTxp_Data("sEsfToTxp_Data");
@@ -255,18 +269,38 @@ void udp_app_flash (
 	#pragma HLS STREAM variable=sRxpToEsf_Data depth=2
     #pragma HLS STREAM variable=sEsfToTxp_Data depth=2
 
+
+    // ====== INIT ==== 
+
+    if ( *pi_size != 3)
+    {
+      //works only with size 3
+      return; 
+    }
+
+    NodeId target = 2;
+    if ( *pi_rank >= 2)
+    {
+      target = 0;
+    }
+
+    *po_udp_rx_ports = 0x1; //currently work only with default ports...
+
     //-- PROCESS FUNCTIONS ----------------------------------------------------
     //pRXPath(piSHL_This_MmioEchoCtrl,
     //        siSHL_This_Data, sRxpToTxp_Data, sRxpToEsf_Data);
 
     //-- LOCAL VARIABLES ------------------------------------------------------
-    UdpWord	udpWord;
+    UdpWord udpWord;
 
     //-- Read incoming data chunk
     if ( !siSHL_This_Data.empty() )
+    {
       udpWord = siSHL_This_Data.read();
-    else
+    }
+    else {
       return;
+    }
 
     // Forward data chunk to Echo function
     switch(piSHL_This_MmioEchoCtrl) {
@@ -276,6 +310,10 @@ void udp_app_flash (
         if ( !sRxpToTxp_Data.full() )
         {
           sRxpToTxp_Data.write(udpWord);
+        }
+        if ( !sRxtoTx_Meta.full() && !siNrc_meta.empty() )
+        {
+          sRxtoTx_Meta.write(siNrc_meta.read());
         }
         break;
 
@@ -318,7 +356,9 @@ void udp_app_flash (
     //pTXPath(piSHL_This_MmioEchoCtrl,
     //    sRxpToTxp_Data, sEsfToTxp_Data, soTHIS_Shl_Data);
     //-- LOCAL VARIABLES ------------------------------------------------------
-    UdpWord	udpWordTx;
+    UdpWord  udpWordTx;
+    NrcMeta  meta_in = NrcMeta();
+    NrcMeta  meta_out = NrcMeta();
 
     //-- Forward incoming chunk to SHELL
     switch(piSHL_This_MmioEchoCtrl) {
@@ -328,8 +368,9 @@ void udp_app_flash (
         if ( !sRxpToTxp_Data.empty() ) {
           udpWordTx = sRxpToTxp_Data.read();
         }
-        else
+        else {
           return;
+        }
         break;
 
       case ECHO_STORE_FWD:
@@ -353,6 +394,13 @@ void udp_app_flash (
     if ( !soTHIS_Shl_Data.full() )
     {
       soTHIS_Shl_Data.write(udpWordTx);
+    }
+
+    if ( !soNrc_meta.full() && !sRxtoTx_Meta.empty() )
+    {
+      meta_in = sRxtoTx_Meta.read().tdata;
+      meta_out = NrcMeta(target, meta_in.src_port, (NodeId) *pi_rank, meta_in.dst_port);
+      soNrc_meta.write(NrcMetaStream(meta_out));
     }
 
 }

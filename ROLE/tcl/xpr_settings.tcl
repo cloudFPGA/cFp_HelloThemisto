@@ -16,11 +16,11 @@
 #-------------------------------------------------------------------------------
 # Xilinx Project Settings
 #-------------------------------------------------------------------------------
-set xprName      "roleFMKU60_Flash"
+set xprName      "roleFMKU60_Themisto"
 set xilPartName  "xcku060-ffva1156-2-i"
 
-set topName      "Role_x1Udp_x1Tcp_x2Mp"
-set topFile      "roleFlash.vhdl"
+set topName      "Role_Themisto"
+set topFile      "Role.vhdl"
 
 
 #-------------------------------------------------------------------------------

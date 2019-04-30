@@ -59,7 +59,7 @@ use     UNISIM.vcomponents.all;
 --**  ENTITY  **  FMKU60 ROLE
 --******************************************************************************
 
-entity Role_x1Udp_x1Tcp_x2Mp is
+entity Role_Themisto is
   port (
 
     ------------------------------------------------------
@@ -84,6 +84,19 @@ entity Role_x1Udp_x1Tcp_x2Mp is
     poROL_Shl_Nts0_Udp_Axis_tkeep       : out   std_ulogic_vector(  7 downto 0);
     poROL_Shl_Nts0_Udp_Axis_tlast       : out   std_ulogic;
     poROL_Shl_Nts0_Udp_Axis_tvalid      : out   std_ulogic;
+    -- Open Port vector
+    piROL_Nrc_Udp_Rx_ports              : in    std_ulogic_vector( 31 downto 0);
+    -- ROLE <-> NRC Meta Interface
+    piROLE_Nrc_Meta_TDATA               : in    std_ulogic_vector( 47 downto 0);
+    piROLE_Nrc_Meta_TVALID              : in    std_ulogic;
+    piROLE_Nrc_Meta_TREADY              : out   std_ulogic;
+    piROLE_Nrc_Meta_TKEEP               : in    std_ulogic_vector(  5 downto 0);
+    piROLE_Nrc_Meta_TLAST               : in    std_ulogic;
+    poNRC_Role_Meta_TDATA               : out   std_ulogic_vector( 47 downto 0);
+    poNRC_Role_Meta_TVALID              : out   std_ulogic;
+    poNRC_Role_Meta_TREADY              : in    std_ulogic;
+    poNRC_Role_Meta_TKEEP               : out   std_ulogic_vector(  5 downto 0);
+    poNRC_Role_Meta_TLAST               : out   std_ulogic;
    
     --------------------------------------------------------
     -- SHELL / Role / Nts0 / Tcp Interface
@@ -203,14 +216,14 @@ entity Role_x1Udp_x1Tcp_x2Mp is
 
   );
   
-end Role_x1Udp_x1Tcp_x2Mp;
+end Role_Themisto;
 
 
 -- *****************************************************************************
 -- **  ARCHITECTURE  **  FLASH of ROLE 
 -- *****************************************************************************
 
-architecture Flash of Role_x1Udp_x1Tcp_x2Mp is
+architecture Flash of Role_Themisto is
 
   constant cUSE_DEPRECATED_DIRECTIVES       : boolean := true;
 

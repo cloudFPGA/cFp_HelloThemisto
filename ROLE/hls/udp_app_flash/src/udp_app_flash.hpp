@@ -56,7 +56,6 @@ enum EchoCtrl {
 
 
 void udp_app_flash (
-
         //------------------------------------------------------
         //-- SHELL / This / Mmio / Config Interfaces
         //------------------------------------------------------
@@ -64,10 +63,15 @@ void udp_app_flash (
         //[TODO] ap_uint<1> piSHL_This_MmioPostPktEn,
         //[TODO] ap_uint<1> piSHL_This_MmioCaptPktEn,
 
+        ap_uint<32>             *pi_rank,
+        ap_uint<32>             *pi_size,
         //------------------------------------------------------
         //-- SHELL / This / Udp Interfaces
         //------------------------------------------------------
         stream<UdpWord>     &siSHL_This_Data,
-        stream<UdpWord>     &soTHIS_Shl_Data
+        stream<UdpWord>     &soTHIS_Shl_Data,
+        stream<NrcMetaStream>   &siNrc_meta,
+        stream<NrcMetaStream>   &soNrc_meta,
+        ap_uint<32>             *po_udp_rx_ports
 );
 

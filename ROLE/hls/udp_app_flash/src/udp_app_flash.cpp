@@ -25,212 +25,9 @@
 
 #include "udp_app_flash.hpp"
 
-#define USE_DEPRECATED_DIRECTIVES
+//#define USE_DEPRECATED_DIRECTIVES
 
 #define MTU		1500	// Maximum Transmission Unit in bytes [TODO:Move to a common place]
-
-/*****************************************************************************
- * @brief Update the payload length based on the setting of the 'tkeep' bits.
- * @ingroup udp_app_flash
- *
- * @param[in]     axisChunk, a pointer to an AXI4-Stream chunk.
- * @param[in,out] pldLen, a pointer to the payload length of the corresponding
- *                     AXI4-Stream.
- * @return Nothing.
- ******************************************************************************/
-//void updatePayloadLength(UdpWord *axisChunk, UdpPLen *pldLen) {
-//    if (axisChunk->tlast) {
-//        int bytCnt = 0;
-//        for (int i = 0; i < 8; i++) {
-//            if (axisChunk->tkeep.bit(i) == 1) {
-//                bytCnt++;
-//            }
-//        }
-//        *pldLen += bytCnt;
-//    } else
-//        *pldLen += 8;
-//}
-
-
-/*****************************************************************************
- * @brief TxPath - Enqueue data onto a FiFo stream while computing the
- *         payload length of incoming frame on the fly.
- * @ingroup udp_app_flash
- *
- * @param[in]  siROLE_Data, the data stream to enqueue.
- * @param[out] soFifo_Data, the FiFo stream to write.
- * @param[out] soPLen,      the length of the enqueued payload.
- *
- * @return Nothing.
- *****************************************************************************/
-// void pTxP_Enqueue (
-//        stream<UdpWord>    &siROLE_Data,
-//        stream<UdpWord>    &soFifo_Data,
-//        stream<UdpPLen>    &soPLen)
-//{
-//    //-- LOCAL VARIABLES ------------------------------------------------------
-//    static UdpPLen    pldLen;
-//
-//    static enum FsmState {FSM_RST=0, FSM_ACC, FSM_LAST_ACC} fsmState;
-//
-//    switch(fsmState) {
-//
-//        case FSM_RST:
-//            pldLen = 0;
-//            fsmState = FSM_ACC;
-//            break;
-//
-//        case FSM_ACC:
-//
-//            // Default stream handling
-//            if ( !siROLE_Data.empty() && !soFifo_Data.full() ) {
-//
-//                // Read incoming data chunk
-//                UdpWord aWord = siROLE_Data.read();
-//
-//                // Increment the payload length
-//                updatePayloadLength(&aWord, &pldLen);
-//
-//                // Enqueue data chunk into FiFo
-//                soFifo_Data.write(aWord);
-//
-//                // Until LAST bit is set
-//                if (aWord.tlast)
-//                    fsmState = FSM_LAST_ACC;
-//            }
-//            break;
-//
-//        case FSM_LAST_ACC:
-//
-//            // Forward the payload length
-//            soPLen.write(pldLen);
-//
-//            // Reset the payload length
-//            pldLen = 0;
-//
-//            // Start over
-//            fsmState = FSM_ACC;
-//
-//            break;
-//    }
-//}
-
-
-/*****************************************************************************
- * @brief TxPath - Dequeue data from a FiFo stream and forward the metadata
- *         when the LAST bit is set.
- * @ingroup udp_app_flash
- *
- * @param[in]  siFifo, the FiFo stream to read from.
- * @param[in]  siMeta, the socket pair information provided by the Rx path.
- * @param[in]  siPLen, the length of the enqueued payload.
- * @param[out] soUDMX_Data, the output data stream.
- * @param[out] soUDMX_Meta, the output metadata stream.
- * @param[out] soUDMX_PLen, the output payload length.
- *
- * @return Nothing.
- *****************************************************************************/
-//void pTxP_Dequeue (
-//        stream<UdpWord>  &siFifo,
-//        stream<UdpMeta>  &siMeta,
-//        stream<UdpPLen>  &siPLen,
-//        stream<UdpWord>  &soUDMX_Data,
-//        stream<UdpMeta>  &soUDMX_Meta,
-//        stream<UdpPLen>  &soUDMX_PLen)
-//{
-//    //-- LOCAL VARIABLES ------------------------------------------------------
-//    static UdpMeta txSocketPairReg;
-//
-//    static enum FsmState {FSM_W8FORMETA=0, FSM_FIRST_ACC, FSM_ACC} fsmState;
-//
-//    switch(fsmState) {
-//
-//        case FSM_W8FORMETA:
-//
-//            // The very first time, wait until the Rx path provides us with the
-//            // socketPair information before continuing
-//            if ( !siMeta.empty() ) {
-//                txSocketPairReg = siMeta.read();
-//                fsmState = FSM_FIRST_ACC;
-//            }
-//            break;
-//
-//        case FSM_FIRST_ACC:
-//
-//            // Send out the first data together with the metadata and payload length information
-//            if ( !siFifo.empty() && !siPLen.empty() ) {
-//                if ( !soUDMX_Data.full() && !soUDMX_Meta.full() && !soUDMX_PLen.full() ) {
-//                    // Forward data chunk, metadata and payload length
-//                    UdpWord    aWord = siFifo.read();
-//                    if (!aWord.tlast) {
-//                        soUDMX_Data.write(aWord);
-//                        soUDMX_Meta.write(txSocketPairReg);
-//                        soUDMX_PLen.write(siPLen.read());
-//                        fsmState = FSM_ACC;
-//                    }
-//                }
-//            }
-//
-//            // Always drain the 'siMeta' stream to avoid any blocking on the Rx side
-//            if ( !siMeta.empty() )
-//                txSocketPairReg = siMeta.read();
-//
-//            break;
-//
-//        case FSM_ACC:
-//
-//            // Default stream handling
-//            if ( !siFifo.empty() && !soUDMX_Data.full() ) {
-//                // Forward data chunk
-//                UdpWord    aWord = siFifo.read();
-//                soUDMX_Data.write(aWord);
-//                // Until LAST bit is set
-//                if (aWord.tlast)
-//                    fsmState = FSM_FIRST_ACC;
-//            }
-//
-//            // Always drain the 'siMeta' stream to avoid any blocking on the Rx side
-//            if ( !siMeta.empty() )
-//                txSocketPairReg = siMeta.read();
-//
-//            break;
-//    }
-//}
-
-
-/*****************************************************************************
- * @brief Echo loopback between the Rx and Tx ports of the UDP connection.
- *         The echo is said to operate in "pass-through" mode because every
- *         received packet is sent back without being stored by this process.
- * @ingroup udp_app_flash
- *
- * @param[in]  siRxp_Data,	data from pRXPath
- * @param[in]  soTxp_Data,	data to pTXPath.
- *
- * @return Nothing.
- ******************************************************************************/
-/*** OBSOLETE ***
-void pEchoPassThrough(
-		stream<UdpWord>		&siRxp_Data,
-		stream<UdpWord>     &soTxp_Data)
-{
-    //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
-	#pragma HLS DATAFLOW interval=1
-
-    //-- LOCAL VARIABLES ------------------------------------------------------
-	static stream<UdpWord>	sFifo ("sFifo");
-	#pragma HLS stream      variable=sFifo depth=MTU
-
-	//-- FiFo Push
-	if ( !siRxp_Data.empty() && !sFifo.full() )
-		sFifo.write(siRxp_Data.read());
-
-	//-- FiFo Pop
-	if ( !sFifo.empty() && !soTxp_Data.full() )
-		soTxp_Data.write(sFifo.read());
-}
-*****/
-
 
 /*****************************************************************************
  * @brief Echo loopback between the Rx and Tx ports of the UDP connection.
@@ -244,6 +41,7 @@ void pEchoPassThrough(
  *
  * @return Nothing.
  ******************************************************************************/
+/*
 void pEchoStoreAndForward( // [TODO - Implement this process as store-and-forward]
 		stream<UdpWord>		&siRxp_Data,
 		stream<UdpWord>     &soTxp_Data)
@@ -263,7 +61,7 @@ void pEchoStoreAndForward( // [TODO - Implement this process as store-and-forwar
 	if ( !sFifo.empty() && !soTxp_Data.full() )
 		soTxp_Data.write(sFifo.read());
 }
-
+*/
 
 /*****************************************************************************
  * @brief Transmit Path - From THIS to SHELL.
@@ -276,6 +74,7 @@ void pEchoStoreAndForward( // [TODO - Implement this process as store-and-forwar
  *
  * @return Nothing.
  *****************************************************************************/
+/*
 void pTXPath(
 		ap_uint<2>           piSHL_MmioEchoCtrl,
         stream<UdpWord>     &siEpt_Data,
@@ -319,7 +118,7 @@ void pTXPath(
     if ( !soSHL_Data.full() )
         soSHL_Data.write(udpWord);
 }
-
+*/
 
 /*****************************************************************************
  * @brief Receive Path - From SHELL to THIS.
@@ -332,6 +131,7 @@ void pTXPath(
  *
  * @return Nothing.
  ******************************************************************************/
+/*
 void pRXPath(
         ap_uint<2>            piSHL_MmioEchoCtrl,
         stream<UdpWord>      &siSHL_Data,
@@ -374,7 +174,7 @@ void pRXPath(
             break;
     }
 }
-
+*/
 
 /*****************************************************************************
  * @brief   Main process of the UDP Application Flash
@@ -456,15 +256,104 @@ void udp_app_flash (
     #pragma HLS STREAM variable=sEsfToTxp_Data depth=2
 
     //-- PROCESS FUNCTIONS ----------------------------------------------------
-    pRXPath(piSHL_This_MmioEchoCtrl,
-            siSHL_This_Data, sRxpToTxp_Data, sRxpToEsf_Data);
+    //pRXPath(piSHL_This_MmioEchoCtrl,
+    //        siSHL_This_Data, sRxpToTxp_Data, sRxpToEsf_Data);
+
+    //-- LOCAL VARIABLES ------------------------------------------------------
+    UdpWord	udpWord;
+
+    //-- Read incoming data chunk
+    if ( !siSHL_This_Data.empty() )
+      udpWord = siSHL_This_Data.read();
+    else
+      return;
+
+    // Forward data chunk to Echo function
+    switch(piSHL_This_MmioEchoCtrl) {
+
+      case ECHO_PATH_THRU:
+        // Forward data chunk to pEchoPathThrough
+        if ( !sRxpToTxp_Data.full() )
+        {
+          sRxpToTxp_Data.write(udpWord);
+        }
+        break;
+
+      case ECHO_STORE_FWD:
+        // Forward data chunk to pEchoStoreAndForward
+        if ( !sRxpToEsf_Data.full() )
+        {
+          sRxpToEsf_Data.write(udpWord);
+        }
+        break;
+
+      case ECHO_OFF:
+        // Drop the packet
+        break;
+
+      default:
+        // Drop the packet
+        break;
+    }
 
     //OBSOLETE-20180918 pEchoPassThrough(sRxpToEpt_Data, sEptToTxp_Data);
 
-    pEchoStoreAndForward(sRxpToEsf_Data, sEsfToTxp_Data);
+    //pEchoStoreAndForward(sRxpToEsf_Data, sEsfToTxp_Data);
+    //-- LOCAL VARIABLES ------------------------------------------------------
+    static stream<UdpWord>	sFifo ("sFifo");
+#pragma HLS stream      variable=sFifo depth=8
 
-    pTXPath(piSHL_This_MmioEchoCtrl,
-    		sRxpToTxp_Data, sEsfToTxp_Data, soTHIS_Shl_Data);
+    //-- FiFo Push
+    if ( !sRxpToEsf_Data.empty() && !sFifo.full() )
+    {
+      sFifo.write(sRxpToEsf_Data.read());
+    }
+
+    //-- FiFo Pop
+    if ( !sFifo.empty() && !sEsfToTxp_Data.full() )
+    {
+      sEsfToTxp_Data.write(sFifo.read());
+    }
+
+    //pTXPath(piSHL_This_MmioEchoCtrl,
+    //    sRxpToTxp_Data, sEsfToTxp_Data, soTHIS_Shl_Data);
+    //-- LOCAL VARIABLES ------------------------------------------------------
+    UdpWord	udpWordTx;
+
+    //-- Forward incoming chunk to SHELL
+    switch(piSHL_This_MmioEchoCtrl) {
+
+      case ECHO_PATH_THRU:
+        // Read data chunk from pEchoPassThrough
+        if ( !sRxpToTxp_Data.empty() ) {
+          udpWordTx = sRxpToTxp_Data.read();
+        }
+        else
+          return;
+        break;
+
+      case ECHO_STORE_FWD:
+        // Read data chunk from pEchoStoreAndForward
+        if ( !sEsfToTxp_Data.empty() )
+        {
+          udpWordTx = sEsfToTxp_Data.read();
+        }
+        break;
+
+      case ECHO_OFF:
+        // Read data chunk from TBD
+        break;
+
+      default:
+        // Reserved configuration ==> Do nothing
+        break;
+    }
+
+    //-- Forward data chunk to SHELL
+    if ( !soTHIS_Shl_Data.full() )
+    {
+      soTHIS_Shl_Data.write(udpWordTx);
+    }
 
 }
 

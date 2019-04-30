@@ -25,6 +25,8 @@
 #include "ap_int.h"
 #include <stdint.h>
 
+#include "../../../../cFDK/SRA/LIB/hls/network_utils.hpp"
+
 using namespace hls;
 
 
@@ -41,14 +43,14 @@ enum EchoCtrl {
  * UDP Specific Streaming Interfaces
  ********************************************/
 
-struct UdpWord {            // UDP Streaming Chunk (i.e. 8 bytes)
-    ap_uint<64>    tdata;
-    ap_uint<8>     tkeep;
-    ap_uint<1>     tlast;
-    UdpWord()      {}
-    UdpWord(ap_uint<64> tdata, ap_uint<8> tkeep, ap_uint<1> tlast) :
-                   tdata(tdata), tkeep(tkeep), tlast(tlast) {}
-};
+//struct UdpWord {            // UDP Streaming Chunk (i.e. 8 bytes)
+//    ap_uint<64>    tdata;
+//    ap_uint<8>     tkeep;
+//    ap_uint<1>     tlast;
+//    UdpWord()      {}
+//    UdpWord(ap_uint<64> tdata, ap_uint<8> tkeep, ap_uint<1> tlast) :
+//                   tdata(tdata), tkeep(tkeep), tlast(tlast) {}
+//};
 
 
 void udp_app_flash (

@@ -323,6 +323,11 @@ void udp_app_flash (
         {
           sRxpToEsf_Data.write(udpWord);
         }
+        //TODO: latency?
+        if ( !sRxtoTx_Meta.full() && !siNrc_meta.empty() )
+        {
+          sRxtoTx_Meta.write(siNrc_meta.read());
+        }
         break;
 
       case ECHO_OFF:
@@ -399,7 +404,11 @@ void udp_app_flash (
     if ( !soNrc_meta.full() && !sRxtoTx_Meta.empty() )
     {
       meta_in = sRxtoTx_Meta.read().tdata;
-      meta_out = NrcMeta(target, meta_in.src_port, (NodeId) *pi_rank, meta_in.dst_port);
+      //meta_out = NrcMeta(target, meta_in.src_port, (NodeId) *pi_rank, meta_in.dst_port);
+      meta_out.dst_rank = target;
+      meta_out.dst_port = DEFAULT_TX_PORT;
+      meta_out.src_rank = (NodeId) *pi_rank;
+      meta_out.src_port = meta_in.dst_port;
       soNrc_meta.write(NrcMetaStream(meta_out));
     }
 

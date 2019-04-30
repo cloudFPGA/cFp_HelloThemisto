@@ -51,6 +51,8 @@ enum EchoCtrl {
 //    UdpWord(ap_uint<64> tdata, ap_uint<8> tkeep, ap_uint<1> tlast) :
 //                   tdata(tdata), tkeep(tkeep), tlast(tlast) {}
 //};
+#define DEFAULT_TX_PORT 2718
+#define DEFAULT_RX_PORT 2718
 
 
 void udp_app_flash (

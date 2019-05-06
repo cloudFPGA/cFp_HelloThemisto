@@ -15,6 +15,8 @@
 stream<UdpWord>      sRxpToTxp_Data("sRxpToTxP_Data");
 stream<NrcMetaStream> sRxtoTx_Meta("sRxtoTx_Meta");
 
+PacketFsmType enqueueFSM = WAIT_FOR_META;
+PacketFsmType dequeueFSM = WAIT_FOR_STREAM_PAIR;
 
 
 /*****************************************************************************
@@ -65,6 +67,9 @@ void udp_app_flash (
 #pragma HLS DATAFLOW interval=1
 //#pragma HLS STREAM variable=sRxpToTxp_Data off depth=1500 
 //#pragma HLS STREAM variable=sRxtoTx_Meta off depth=1500 
+#pragma HLS reset variable=enqueueFSM
+#pragma HLS reset variable=dequeueFSM
+
 
   // ====== INIT ==== 
 
@@ -85,35 +90,74 @@ void udp_app_flash (
   //-- LOCAL VARIABLES ------------------------------------------------------
   UdpWord udpWord;
   UdpWord  udpWordTx;
+  NrcMetaStream  meta_tmp = NrcMetaStream();
   NrcMeta  meta_in = NrcMeta();
   NrcMeta  meta_out = NrcMeta();
 
-  //-- Read incoming data chunk
-  if ( !siSHL_This_Data.empty() && !siNrc_meta.empty() 
-      && !sRxpToTxp_Data.full() && !sRxtoTx_Meta.full() )
-  {
-    udpWord = siSHL_This_Data.read();
-    sRxpToTxp_Data.write(udpWord);
 
-    sRxtoTx_Meta.write(siNrc_meta.read());
+  switch(enqueueFSM)
+  {
+    case WAIT_FOR_META: 
+      if ( !siNrc_meta.empty() && !sRxtoTx_Meta.full() )
+      {
+        meta_tmp = siNrc_meta.read();
+        meta_tmp.tlast = 1; //just to be sure...
+        sRxtoTx_Meta.write(meta_tmp);
+        enqueueFSM = PROCESSING_PACKET;
+      }
+      break;
+
+    case PROCESSING_PACKET:
+      if ( !siSHL_This_Data.empty() && !sRxpToTxp_Data.full() )
+      {
+        //-- Read incoming data chunk
+        udpWord = siSHL_This_Data.read();
+        sRxpToTxp_Data.write(udpWord);
+        if(udpWord.tlast == 1)
+        {
+          enqueueFSM = WAIT_FOR_META;
+        }
+      }
+      break;
   }
 
 
-  //-- Forward incoming chunk to SHELL
-
-  if ( !sRxpToTxp_Data.empty() && !sRxtoTx_Meta.empty() 
-      && !soTHIS_Shl_Data.full() &&  !soNrc_meta.full() ) 
+  switch(dequeueFSM)
   {
-    udpWordTx = sRxpToTxp_Data.read();
-    soTHIS_Shl_Data.write(udpWordTx);
+    case WAIT_FOR_STREAM_PAIR:
+      //-- Forward incoming chunk to SHELL
+      if ( !sRxpToTxp_Data.empty() && !sRxtoTx_Meta.empty() 
+          && !soTHIS_Shl_Data.full() &&  !soNrc_meta.full() ) 
+      {
+        udpWordTx = sRxpToTxp_Data.read();
+        soTHIS_Shl_Data.write(udpWordTx);
 
-    meta_in = sRxtoTx_Meta.read().tdata;
-    //meta_out = NrcMeta(target, meta_in.src_port, (NodeId) *pi_rank, meta_in.dst_port);
-    meta_out.dst_rank = target;
-    meta_out.dst_port = DEFAULT_TX_PORT;
-    meta_out.src_rank = (NodeId) *pi_rank;
-    meta_out.src_port = meta_in.dst_port;
-    soNrc_meta.write(NrcMetaStream(meta_out));
+        meta_in = sRxtoTx_Meta.read().tdata;
+        //meta_out = NrcMeta(target, meta_in.src_port, (NodeId) *pi_rank, meta_in.dst_port);
+        meta_out.dst_rank = target;
+        meta_out.dst_port = DEFAULT_TX_PORT;
+        meta_out.src_rank = (NodeId) *pi_rank;
+        meta_out.src_port = meta_in.dst_port;
+        soNrc_meta.write(NrcMetaStream(meta_out));
+
+        if(udpWordTx.tlast != 1)
+        {
+          dequeueFSM = PROCESSING_PACKET;
+        }
+      }
+
+    case PROCESSING_PACKET: 
+      if( !sRxpToTxp_Data.empty() && !soTHIS_Shl_Data.full())
+      {
+        udpWordTx = sRxpToTxp_Data.read();
+        soTHIS_Shl_Data.write(udpWordTx);
+
+        if(udpWordTx.tlast == 1)
+        {
+          dequeueFSM = WAIT_FOR_STREAM_PAIR;
+        }
+
+      }
   }
 
 }

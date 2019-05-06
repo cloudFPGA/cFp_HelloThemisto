@@ -39,6 +39,12 @@ using namespace hls;
 //  ECHO_OFF		= 2
 //};
 
+#define WAIT_FOR_META 0
+#define WAIT_FOR_STREAM_PAIR 1
+#define PROCESSING_PACKET 2
+#define PacketFsmType uint8_t
+
+
 #define DEFAULT_TX_PORT 2718
 #define DEFAULT_RX_PORT 2718
 

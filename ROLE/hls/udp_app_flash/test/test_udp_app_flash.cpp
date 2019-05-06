@@ -33,13 +33,13 @@ using namespace std;
 //------------------------------------------------------
 
 //-- SHELL / Uaf / Mmio / Config Interfaces
-ap_uint<2>          piSHL_This_MmioEchoCtrl;
+//ap_uint<2>          piSHL_This_MmioEchoCtrl;
 ap_uint<1>          piSHL_This_MmioPostPktEn;
 ap_uint<1>          piSHL_This_MmioCaptPktEn;
 
 //-- SHELL / Uaf / Udp Interfaces
-stream<UdpWord>		sSHL_Uaf_Data	("sSHL_Uaf_Data");
-stream<UdpWord>     sUAF_Shl_Data  	("sUAF_Shl_Data");
+stream<UdpWord>   sSHL_Uaf_Data ("sSHL_Uaf_Data");
+stream<UdpWord>     sUAF_Shl_Data   ("sUAF_Shl_Data");
 
 //------------------------------------------------------
 //-- TESTBENCH GLOBAL VARIABLES
@@ -54,10 +54,10 @@ int         simCnt;
  ******************************************************************************/
 void stepDut() {
     udp_app_flash(
-    		piSHL_This_MmioEchoCtrl,
-			//[TODO] piSHL_This_MmioPostPktEn,
-			//[TODO] piSHL_This_MmioCaptPktEn,
-			sSHL_Uaf_Data, sUAF_Shl_Data);
+    //piSHL_This_MmioEchoCtrl,
+      //[TODO] piSHL_This_MmioPostPktEn,
+      //[TODO] piSHL_This_MmioCaptPktEn,
+      sSHL_Uaf_Data, sUAF_Shl_Data);
     simCnt++;
     printf("[%4.4d] STEP DUT \n", simCnt);
 }
@@ -227,7 +227,7 @@ int main() {
     //------------------------------------------------------
     //-- STEP-1.2 : SET THE PASS-THROUGH MODE
     //------------------------------------------------------
-    piSHL_This_MmioEchoCtrl.write(ECHO_PATH_THRU);
+    //piSHL_This_MmioEchoCtrl.write(ECHO_PATH_THRU);
     //[TODO] piSHL_This_MmioPostPktEn.write(DISABLED);
     //[TODO] piSHL_This_MmioCaptPktEn.write(DISABLED);
 

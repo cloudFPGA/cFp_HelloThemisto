@@ -342,11 +342,12 @@ architecture Flash of Role_Themisto is
       -- From SHELL / Clock and Reset
       ------------------------------------------------------
       ap_clk                      : in  std_logic;
-      ap_rst_n                    : in  std_logic;    
+      ap_rst_n                    : in  std_logic;
+      ap_start                    : in  std_logic;
       --------------------------------------------------------
       -- From SHELL / Mmio Interfaces
       --------------------------------------------------------       
-      piSHL_This_MmioEchoCtrl_V : in  std_logic_vector(  1 downto 0);
+      --piSHL_This_MmioEchoCtrl_V : in  std_logic_vector(  1 downto 0);
       --[TODO] piSHL_This_MmioPostPktEn  : in  std_logic;
       --[TODO] piSHL_This_MmioCaptPktEn  : in  std_logic;
 
@@ -580,11 +581,11 @@ begin
           ------------------------------------------------------
           ap_clk                      => piSHL_156_25Clk,
           ap_rst_n                    => (not piSHL_156_25Rst),
-          
+          ap_start                    => '1',
            --------------------------------------------------------
            -- From SHELL / Mmio Interfaces
            --------------------------------------------------------       
-          piSHL_This_MmioEchoCtrl_V => piSHL_Rol_Mmio_UdpEchoCtrl,
+          --piSHL_This_MmioEchoCtrl_V => piSHL_Rol_Mmio_UdpEchoCtrl,
           --[TODO] piSHL_This_MmioPostPktEn  => piSHL_Rol_Mmio_UdpPostPktEn,
           --[TODO] piSHL_This_MmioCaptPktEn  => piSHL_Rol_Mmio_UdpCaptPktEn,
           
@@ -627,57 +628,57 @@ begin
     
   end generate;
 
-  gUdpAppFlash : if cUSE_DEPRECATED_DIRECTIVES=false generate
-    begin
-      --==========================================================================
-      --==  INST: UDP-APPLICATION_FLASH for FMKU60
-      --==   This version of the 'udp_app_flash' has the following interfaces:
-      --==    - one bidirectionnal UDP data stream and one streaming MemoryPort. 
-      --==========================================================================
-      UAF : UdpApplicationFlashFail
-        port map (
-        
-          ------------------------------------------------------
-          -- From SHELL / Clock and Reset
-          ------------------------------------------------------
-          ap_clk                    => piSHL_156_25Clk,
-          ap_rst_n                  => (not piSHL_156_25Rst),
-          
-          ------------------------------------------------------
-          -- BLock-Level I/O Protocol
-          ------------------------------------------------------
-          --ap_start                  => (not piSHL_156_25Rst),
-          --ap_ready                  => open,
-          --ap_done                   => open,
-          --ap_idle                   => open,
-          
-          --------------------------------------------------------
-          -- From SHELL / Mmio Interfaces
-          --------------------------------------------------------       
-          piSHL_This_MmioEchoCtrl_V => piSHL_Rol_Mmio_UdpEchoCtrl,
-          --[TODO] piSHL_This_MmioPostPktEn  => piSHL_Rol_Mmio_UdpPostPktEn,
-          --[TODO] piSHL_This_MmioCaptPktEn  => piSHL_Rol_Mmio_UdpCaptPktEn,
-          
-          --------------------------------------------------------
-          -- From SHELL / Udp Data Interfaces
-          --------------------------------------------------------
-          siSHL_This_Data_tdata     => piSHL_Rol_Nts0_Udp_Axis_tdata,
-          siSHL_This_Data_tkeep     => piSHL_Rol_Nts0_Udp_Axis_tkeep,
-          siSHL_This_Data_tlast     => fVectorize(piSHL_Rol_Nts0_Udp_Axis_tlast),
-          siSHL_This_Data_tvalid    => piSHL_Rol_Nts0_Udp_Axis_tvalid,
-          siSHL_This_Data_tready    => poROL_Shl_Nts0_Udp_Axis_tready,
-          --------------------------------------------------------
-          -- To SHELL / Udp Data Interfaces
-          --------------------------------------------------------
-          soTHIS_Shl_Data_tdata     => poROL_Shl_Nts0_Udp_Axis_tdata,
-          soTHIS_Shl_Data_tkeep     => poROL_Shl_Nts0_Udp_Axis_tkeep,
-          fScalarize(soTHIS_Shl_Data_tlast) => poROL_Shl_Nts0_Udp_Axis_tlast,
-          soTHIS_Shl_Data_tvalid    => poROL_Shl_Nts0_Udp_Axis_tvalid,
-          soTHIS_Shl_Data_tready    => piSHL_Rol_Nts0_Udp_Axis_tready
-          
-        );
-
-  end generate;
+--  gUdpAppFlash : if cUSE_DEPRECATED_DIRECTIVES=false generate
+--    begin
+--      --==========================================================================
+--      --==  INST: UDP-APPLICATION_FLASH for FMKU60
+--      --==   This version of the 'udp_app_flash' has the following interfaces:
+--      --==    - one bidirectionnal UDP data stream and one streaming MemoryPort. 
+--      --==========================================================================
+--      UAF : UdpApplicationFlashFail
+--        port map (
+--        
+--          ------------------------------------------------------
+--          -- From SHELL / Clock and Reset
+--          ------------------------------------------------------
+--          ap_clk                    => piSHL_156_25Clk,
+--          ap_rst_n                  => (not piSHL_156_25Rst),
+--          
+--          ------------------------------------------------------
+--          -- BLock-Level I/O Protocol
+--          ------------------------------------------------------
+--          --ap_start                  => (not piSHL_156_25Rst),
+--          --ap_ready                  => open,
+--          --ap_done                   => open,
+--          --ap_idle                   => open,
+--          
+--          --------------------------------------------------------
+--          -- From SHELL / Mmio Interfaces
+--          --------------------------------------------------------       
+--          piSHL_This_MmioEchoCtrl_V => piSHL_Rol_Mmio_UdpEchoCtrl,
+--          --[TODO] piSHL_This_MmioPostPktEn  => piSHL_Rol_Mmio_UdpPostPktEn,
+--          --[TODO] piSHL_This_MmioCaptPktEn  => piSHL_Rol_Mmio_UdpCaptPktEn,
+--          
+--          --------------------------------------------------------
+--          -- From SHELL / Udp Data Interfaces
+--          --------------------------------------------------------
+--          siSHL_This_Data_tdata     => piSHL_Rol_Nts0_Udp_Axis_tdata,
+--          siSHL_This_Data_tkeep     => piSHL_Rol_Nts0_Udp_Axis_tkeep,
+--          siSHL_This_Data_tlast     => fVectorize(piSHL_Rol_Nts0_Udp_Axis_tlast),
+--          siSHL_This_Data_tvalid    => piSHL_Rol_Nts0_Udp_Axis_tvalid,
+--          siSHL_This_Data_tready    => poROL_Shl_Nts0_Udp_Axis_tready,
+--          --------------------------------------------------------
+--          -- To SHELL / Udp Data Interfaces
+--          --------------------------------------------------------
+--          soTHIS_Shl_Data_tdata     => poROL_Shl_Nts0_Udp_Axis_tdata,
+--          soTHIS_Shl_Data_tkeep     => poROL_Shl_Nts0_Udp_Axis_tkeep,
+--          fScalarize(soTHIS_Shl_Data_tlast) => poROL_Shl_Nts0_Udp_Axis_tlast,
+--          soTHIS_Shl_Data_tvalid    => poROL_Shl_Nts0_Udp_Axis_tvalid,
+--          soTHIS_Shl_Data_tready    => piSHL_Rol_Nts0_Udp_Axis_tready
+--          
+--        );
+--
+--  end generate;
 
   
   --################################################################################

@@ -43,6 +43,11 @@ set testDir      ${currDir}/test
 set implDir      ${currDir}/${projectName}_prj/${solutionName}/impl/ip 
 set repoDir      ${currDir}/../../ip
 
+# Get targets out of env  
+#-------------------------------------------------
+set hlsSim $env(hlsSim)
+set hlsCoSim $env(hlsCoSim)
+
 # Open and Setup Project
 #-------------------------------------------------
 open_project  ${projectName}_prj
@@ -62,21 +67,21 @@ create_clock -period 6.4 -name default
 
 # Run C Simulation and Synthesis
 #-------------------------------------------------
-if { 0 } {
-  csim_design -clean
-}
-csynth_design
+if { $hlsSim } { 
+  csim_design -compiler gcc -clean
+} else {
 
-# Run RTL Simulation
-#-------------------------------------------------
-if { 0 } {
-    cosim_design -tool xsim -rtl verilog -trace_level all
+  csynth_design
+  
+  if { $hlsCoSim } {
+    cosim_design -compiler gcc -trace_level all 
+  } else {
+  
+  # Export RTL
+  #-------------------------------------------------
+    export_design -rtl vhdl -format ${ipPkgFormat} -library ${ipLibrary} -display_name ${ipDisplayName} -description ${ipDescription} -vendor ${ipVendor} -version ${ipVersion}
+  }
 }
-
-# Export RTL (refer to UG902)
-#   -format ( sysgen | ip_catalog | syn_dcp )
-#-------------------------------------------------
-export_design -format ${ipPkgFormat} -library ${ipLibrary} -display_name ${ipDisplayName} -description ${ipDescription} -vendor ${ipVendor} -version ${ipVersion}
 
 # Exit Vivado HLS
 #--------------------------------------------------

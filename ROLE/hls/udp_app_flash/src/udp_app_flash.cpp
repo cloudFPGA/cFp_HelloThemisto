@@ -14,7 +14,6 @@
 
 stream<UdpWord>      sRxpToTxp_Data("sRxpToTxP_Data");
 stream<NrcMetaStream> sRxtoTx_Meta("sRxtoTx_Meta");
-//  #pragma HLS STREAM variable=sRxpToTxp_Data off depth=1500 TODO: necessary?
 
 
 
@@ -63,8 +62,9 @@ void udp_app_flash (
 
 
   //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
-  #pragma HLS DATAFLOW interval=1
-
+#pragma HLS DATAFLOW interval=1
+//#pragma HLS STREAM variable=sRxpToTxp_Data off depth=1500 
+//#pragma HLS STREAM variable=sRxtoTx_Meta off depth=1500 
 
   // ====== INIT ==== 
 
@@ -92,8 +92,8 @@ void udp_app_flash (
   if ( !siSHL_This_Data.empty() && !siNrc_meta.empty() 
       && !sRxpToTxp_Data.full() && !sRxtoTx_Meta.full() )
   {
-    sRxpToTxp_Data.write(udpWord);
     udpWord = siSHL_This_Data.read();
+    sRxpToTxp_Data.write(udpWord);
 
     sRxtoTx_Meta.write(siNrc_meta.read());
   }

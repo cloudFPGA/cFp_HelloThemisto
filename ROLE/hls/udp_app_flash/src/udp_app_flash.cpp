@@ -80,7 +80,7 @@ void udp_app_flash (
   }
 
   NodeId target = 2;
-  if ( *pi_rank >= 2)
+  if ( *pi_rank == 2)
   {
     target = 0;
   }
@@ -127,7 +127,7 @@ void udp_app_flash (
     case WAIT_FOR_STREAM_PAIR:
       //-- Forward incoming chunk to SHELL
       if ( !sRxpToTxp_Data.empty() && !sRxtoTx_Meta.empty() 
-          && !soTHIS_Shl_Data.full() &&  !soNrc_meta.full() ) 
+          && !soTHIS_Shl_Data.full() &&  !soNrc_meta.full() ) //TODO: split up?
       {
         udpWordTx = sRxpToTxp_Data.read();
         soTHIS_Shl_Data.write(udpWordTx);

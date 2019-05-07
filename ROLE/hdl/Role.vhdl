@@ -542,11 +542,11 @@ begin
 --  -- write constant to EMIF Register to test read out 
 --  --poROL_SHL_EMIF_2B_Reg <= x"EF" & EMIF_inv; 
 --  poROL_SHL_EMIF_2B_Reg( 7 downto 0)  <= EMIF_inv; 
---  poROL_SHL_EMIF_2B_Reg(11 downto 8) <= piSMC_ROLE_rank(3 downto 0) when (unsigned(piSMC_ROLE_rank) /= 0) else 
---                                      x"F"; 
---  poROL_SHL_EMIF_2B_Reg(15 downto 12) <= piSMC_ROLE_size(3 downto 0) when (unsigned(piSMC_ROLE_size) /= 0) else 
---                                      x"E"; 
---
+  poROL_SHL_EMIF_2B_Reg(11 downto 8) <= piSMC_ROLE_rank(3 downto 0) when (unsigned(piSMC_ROLE_rank) /= 0) else 
+                                      x"F"; 
+  poROL_SHL_EMIF_2B_Reg(15 downto 12) <= piSMC_ROLE_size(3 downto 0) when (unsigned(piSMC_ROLE_size) /= 0) else 
+                                      x"E"; 
+
 --  EMIF_inv <= (not piSHL_ROL_EMIF_2B_Reg(7 downto 0)) when piSHL_ROL_EMIF_2B_Reg(15) = '1' else 
 --              x"BE" ;
 --
@@ -808,7 +808,7 @@ begin
            piMMIO_diag_ctrl_V_ap_vld  => '1',
            poMMIO_diag_stat_V         => poDIAG_STAT,
            --poMMIO_diag_stat_V_ap_vld  => ,
-           poDebug_V                  => poROL_SHL_EMIF_2B_Reg,
+           --poDebug_V                  => poROL_SHL_EMIF_2B_Reg, --TODO?
            --poDebug_V_ap_vld           => ,
            soMemRdCmdP0_TDATA         => poROL_Shl_Mem_Mp0_Axis_RdCmd_tdata ,
            soMemRdCmdP0_TVALID        => poROL_Shl_Mem_Mp0_Axis_RdCmd_tvalid,

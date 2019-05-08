@@ -58,15 +58,15 @@ void udp_app_flash (
 #pragma HLS INTERFACE axis register both port=siNrc_meta
 #pragma HLS INTERFACE axis register both port=soNrc_meta
 
-#pragma HLS INTERFACE ap_vld register port=po_udp_rx_ports name=poROL_NRC_Udp_Rx_ports
+#pragma HLS INTERFACE ap_ovld register port=po_udp_rx_ports name=poROL_NRC_Udp_Rx_ports
 #pragma HLS INTERFACE ap_vld register port=pi_rank name=piSMC_ROL_rank
 #pragma HLS INTERFACE ap_vld register port=pi_size name=piSMC_ROL_size
 
 
   //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
-#pragma HLS DATAFLOW interval=1
-//#pragma HLS STREAM variable=sRxpToTxp_Data off depth=1500 
-//#pragma HLS STREAM variable=sRxtoTx_Meta off depth=1500 
+//#pragma HLS DATAFLOW interval=1
+#pragma HLS STREAM variable=sRxpToTxp_Data depth=1500 
+#pragma HLS STREAM variable=sRxtoTx_Meta depth=1500 
 #pragma HLS reset variable=enqueueFSM
 #pragma HLS reset variable=dequeueFSM
 
@@ -79,11 +79,6 @@ void udp_app_flash (
     return; 
   }
 
-  NodeId target = 2;
-  if ( *pi_rank == 2)
-  {
-    target = 0;
-  }
 
   *po_udp_rx_ports = 0x1; //currently work only with default ports...
 
@@ -92,7 +87,7 @@ void udp_app_flash (
   UdpWord  udpWordTx;
   NrcMetaStream  meta_tmp = NrcMetaStream();
   NrcMeta  meta_in = NrcMeta();
-  NrcMeta  meta_out = NrcMeta();
+  //NrcMeta  meta_out = NrcMeta();
 
 
   switch(enqueueFSM)
@@ -134,11 +129,27 @@ void udp_app_flash (
 
         meta_in = sRxtoTx_Meta.read().tdata;
         //meta_out = NrcMeta(target, meta_in.src_port, (NodeId) *pi_rank, meta_in.dst_port);
-        meta_out.dst_rank = target;
-        meta_out.dst_port = DEFAULT_TX_PORT;
-        meta_out.src_rank = (NodeId) *pi_rank;
-        meta_out.src_port = meta_in.dst_port;
-        soNrc_meta.write(NrcMetaStream(meta_out));
+        NrcMetaStream meta_out_stream = NrcMetaStream();
+        meta_out_stream.tlast = 1;
+        meta_out_stream.tkeep = 0xFF; //JUST TO BE SURE!
+        //NodeId target = 2;
+        if ( *pi_rank == 2)
+        {
+          //target = 0;
+          meta_out_stream.tdata.dst_rank = 0;
+        } else {
+          meta_out_stream.tdata.dst_rank = 2;
+        }
+        //meta_out.dst_rank = target;
+        //meta_out.dst_port = DEFAULT_TX_PORT;
+        //meta_out.src_rank = (NodeId) *pi_rank;
+        //meta_out.src_port = meta_in.dst_port;
+        //soNrc_meta.write(NrcMetaStream(meta_out));
+
+        meta_out_stream.tdata.dst_port = DEFAULT_TX_PORT;
+        meta_out_stream.tdata.src_rank = (NodeId) *pi_rank;
+        meta_out_stream.tdata.src_port = DEFAULT_RX_PORT;
+        soNrc_meta.write(meta_out_stream);
 
         if(udpWordTx.tlast != 1)
         {

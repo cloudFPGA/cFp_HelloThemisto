@@ -353,9 +353,9 @@ architecture Flash of Role_Themisto is
 
       -- rank and size
       piSMC_ROL_rank_V        : in std_logic_vector (31 downto 0);
-      piSMC_ROL_rank_V_ap_vld : in std_logic;
+      --piSMC_ROL_rank_V_ap_vld : in std_logic;
       piSMC_ROL_size_V        : in std_logic_vector (31 downto 0);
-      piSMC_ROL_size_V_ap_vld : in std_logic;
+      --piSMC_ROL_size_V_ap_vld : in std_logic;
       --------------------------------------------------------
       -- From SHELL / Udp Data Interfaces
       --------------------------------------------------------
@@ -590,9 +590,9 @@ begin
           --[TODO] piSHL_This_MmioCaptPktEn  => piSHL_Rol_Mmio_UdpCaptPktEn,
           
           piSMC_ROL_rank_V         => piSMC_ROLE_rank,
-          piSMC_ROL_rank_V_ap_vld  => '1',
+          --piSMC_ROL_rank_V_ap_vld  => '1',
           piSMC_ROL_size_V         => piSMC_ROLE_size,
-          piSMC_ROL_size_V_ap_vld  => '1',
+          --piSMC_ROL_size_V_ap_vld  => '1',
           --------------------------------------------------------
           -- From SHELL / Udp Data Interfaces
           --------------------------------------------------------

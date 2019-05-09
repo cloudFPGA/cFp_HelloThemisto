@@ -59,8 +59,8 @@ void udp_app_flash (
 #pragma HLS INTERFACE axis register both port=soNrc_meta
 
 #pragma HLS INTERFACE ap_ovld register port=po_udp_rx_ports name=poROL_NRC_Udp_Rx_ports
-#pragma HLS INTERFACE ap_vld register port=pi_rank name=piSMC_ROL_rank
-#pragma HLS INTERFACE ap_vld register port=pi_size name=piSMC_ROL_size
+#pragma HLS INTERFACE ap_stable register port=pi_rank name=piSMC_ROL_rank
+#pragma HLS INTERFACE ap_stable register port=pi_size name=piSMC_ROL_size
 
 
   //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
@@ -71,13 +71,12 @@ void udp_app_flash (
 #pragma HLS reset variable=dequeueFSM
 
 
-  // ====== INIT ==== 
 
-  if ( *pi_size != 3)
-  {
-    //works only with size 3
-    return; 
-  }
+ // if ( *pi_size != 3)
+ // {
+ //   //works only with size 3
+ //   return; 
+ // }
 
 
   *po_udp_rx_ports = 0x1; //currently work only with default ports...

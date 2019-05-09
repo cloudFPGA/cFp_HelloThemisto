@@ -34,8 +34,8 @@ void udp_app_flash (
     //[TODO] ap_uint<1> piSHL_This_MmioPostPktEn,
     //[TODO] ap_uint<1> piSHL_This_MmioCaptPktEn,
 
-    ap_uint<32>             *pi_rank,
-    ap_uint<32>             *pi_size,
+    ap_uint<32>             pi_rank,
+    ap_uint<32>             pi_size,
     //------------------------------------------------------
     //-- SHELL / This / Udp Interfaces
     //------------------------------------------------------
@@ -139,7 +139,7 @@ void udp_app_flash (
         //} else {
         //  meta_out_stream.tdata.dst_rank = 2;
         //}
-        meta_out_stream.tdata.dst_rank = (*pi_rank + 1) % *pi_size;
+        meta_out_stream.tdata.dst_rank = (pi_rank + 1) % pi_size;
         //meta_out.dst_rank = target;
         //meta_out.dst_port = DEFAULT_TX_PORT;
         //meta_out.src_rank = (NodeId) *pi_rank;
@@ -147,7 +147,7 @@ void udp_app_flash (
         //soNrc_meta.write(NrcMetaStream(meta_out));
 
         meta_out_stream.tdata.dst_port = DEFAULT_TX_PORT;
-        meta_out_stream.tdata.src_rank = (NodeId) *pi_rank;
+        meta_out_stream.tdata.src_rank = (NodeId) pi_rank;
         meta_out_stream.tdata.src_port = DEFAULT_RX_PORT;
         soNrc_meta.write(meta_out_stream);
 

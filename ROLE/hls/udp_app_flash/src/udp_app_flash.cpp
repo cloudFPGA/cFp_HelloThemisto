@@ -64,9 +64,9 @@ void udp_app_flash (
 
 
   //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
-//#pragma HLS DATAFLOW interval=1
-#pragma HLS STREAM variable=sRxpToTxp_Data depth=1500 
-#pragma HLS STREAM variable=sRxtoTx_Meta depth=1500 
+#pragma HLS DATAFLOW interval=1
+//#pragma HLS STREAM variable=sRxpToTxp_Data depth=1500 
+//#pragma HLS STREAM variable=sRxtoTx_Meta depth=1500 
 #pragma HLS reset variable=enqueueFSM
 #pragma HLS reset variable=dequeueFSM
 
@@ -133,13 +133,14 @@ void udp_app_flash (
         meta_out_stream.tlast = 1;
         meta_out_stream.tkeep = 0xFF; //JUST TO BE SURE!
         //NodeId target = 2;
-        if ( *pi_rank == 2)
-        {
-          //target = 0;
-          meta_out_stream.tdata.dst_rank = 0;
-        } else {
-          meta_out_stream.tdata.dst_rank = 2;
-        }
+        //if ( *pi_rank == 2)
+        //{
+        //  //target = 0;
+        //  meta_out_stream.tdata.dst_rank = 0;
+        //} else {
+        //  meta_out_stream.tdata.dst_rank = 2;
+        //}
+        meta_out_stream.tdata.dst_rank = (*pi_rank + 1) % *pi_size;
         //meta_out.dst_rank = target;
         //meta_out.dst_port = DEFAULT_TX_PORT;
         //meta_out.src_rank = (NodeId) *pi_rank;

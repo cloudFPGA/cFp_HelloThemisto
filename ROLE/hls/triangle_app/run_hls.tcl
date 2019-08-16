@@ -22,13 +22,13 @@
 
 # User defined settings
 #-------------------------------------------------
-set projectName    "udp_app_flash"
+set projectName    "triangle_app"
 set solutionName   "solution1"
 set xilPartName    "xcku060-ffva1156-2-i"
 
 set ipName         ${projectName}
-set ipDisplayName  "UDP Application Flash."
-set ipDescription  "A set of tests and functions embedded into the flash of the cloudFPGA role."
+set ipDisplayName  "Triangle Application Example."
+set ipDescription  "Demonstrates the functionalities of a cloudFPGA cluster."
 set ipVendor       "IBM"
 set ipLibrary      "hls"
 set ipVersion      "1.0"

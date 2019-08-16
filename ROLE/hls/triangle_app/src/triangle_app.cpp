@@ -6,44 +6,37 @@
 //  *     Authors: FAB, WEI, NGL
 //  *
 //  *     Description:
-//  *        The Role for a Triangle Example application
+//  *        The Role for a Triangle Example application (UDP or TCP)
 //  *
 
-#include "udp_app_flash.hpp"
+#include "triangle_app.hpp"
 
 
-stream<UdpWord>      sRxpToTxp_Data("sRxpToTxP_Data");
-stream<NrcMetaStream> sRxtoTx_Meta("sRxtoTx_Meta");
+stream<NetworkWord>       sRxpToTxp_Data("sRxpToTxP_Data");
+stream<NetworkMetaStream> sRxtoTx_Meta("sRxtoTx_Meta");
 
 PacketFsmType enqueueFSM = WAIT_FOR_META;
 PacketFsmType dequeueFSM = WAIT_FOR_STREAM_PAIR;
 
 
 /*****************************************************************************
- * @brief   Main process of the UDP Application Flash
+ * @brief   Main process of the UDP/Tcp Triangle Application
  * @ingroup udp_app_flash
  *
  * @return Nothing.
  *****************************************************************************/
-void udp_app_flash (
-
-    //------------------------------------------------------
-    //-- SHELL / This / Mmio / Config Interfaces
-    //------------------------------------------------------
-    //ap_uint<2>          piSHL_This_MmioEchoCtrl,
-    //[TODO] ap_uint<1> piSHL_This_MmioPostPktEn,
-    //[TODO] ap_uint<1> piSHL_This_MmioCaptPktEn,
+void triangle_app(
 
     ap_uint<32>             pi_rank,
     ap_uint<32>             pi_size,
     //------------------------------------------------------
-    //-- SHELL / This / Udp Interfaces
+    //-- SHELL / This / Udp/TCP Interfaces
     //------------------------------------------------------
-    stream<UdpWord>     &siSHL_This_Data,
-    stream<UdpWord>     &soTHIS_Shl_Data,
-    stream<NrcMetaStream>   &siNrc_meta,
-    stream<NrcMetaStream>   &soNrc_meta,
-    ap_uint<32>             *po_udp_rx_ports
+    stream<NetworkWord>         &siSHL_This_Data,
+    stream<NetworkWord>         &soTHIS_Shl_Data,
+    stream<NetworkMetaStream>   &siNrc_meta,
+    stream<NetworkMetaStream>   &soNrc_meta,
+    ap_uint<32>                 *po_rx_ports
     )
 {
 
@@ -58,9 +51,9 @@ void udp_app_flash (
 #pragma HLS INTERFACE axis register both port=siNrc_meta
 #pragma HLS INTERFACE axis register both port=soNrc_meta
 
-#pragma HLS INTERFACE ap_ovld register port=po_udp_rx_ports name=poROL_NRC_Udp_Rx_ports
-#pragma HLS INTERFACE ap_stable register port=pi_rank name=piSMC_ROL_rank
-#pragma HLS INTERFACE ap_stable register port=pi_size name=piSMC_ROL_size
+#pragma HLS INTERFACE ap_ovld register port=po_rx_ports name=poROL_NRC_Rx_ports
+#pragma HLS INTERFACE ap_stable register port=pi_rank name=piFMC_ROL_rank
+#pragma HLS INTERFACE ap_stable register port=pi_size name=piFMC_ROL_size
 
 
   //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
@@ -79,13 +72,13 @@ void udp_app_flash (
  // }
 
 
-  *po_udp_rx_ports = 0x1; //currently work only with default ports...
+  *po_rx_ports = 0x1; //currently work only with default ports...
 
   //-- LOCAL VARIABLES ------------------------------------------------------
-  UdpWord udpWord;
-  UdpWord  udpWordTx;
-  NrcMetaStream  meta_tmp = NrcMetaStream();
-  NrcMeta  meta_in = NrcMeta();
+  NetworkWord udpWord;
+  NetworkWord  udpWordTx;
+  NetworkMetaStream  meta_tmp = NetworkMetaStream();
+  NetworkMeta  meta_in = NetworkMeta();
   //NrcMeta  meta_out = NrcMeta();
 
 
@@ -128,7 +121,7 @@ void udp_app_flash (
 
         meta_in = sRxtoTx_Meta.read().tdata;
         //meta_out = NrcMeta(target, meta_in.src_port, (NodeId) *pi_rank, meta_in.dst_port);
-        NrcMetaStream meta_out_stream = NrcMetaStream();
+        NetworkMetaStream meta_out_stream = NetworkMetaStream();
         meta_out_stream.tlast = 1;
         meta_out_stream.tkeep = 0xFF; //JUST TO BE SURE!
         //NodeId target = 2;

@@ -15,7 +15,7 @@
 # ******************************************************************************
 
 # Name of the HLS core to build
-ipName = udp_app_flash
+ipName =triangle_app
 
 DEPS := $(shell find ./src/ -type f)
 

@@ -383,7 +383,7 @@ update_ip_catalog
 #------------------------------------------------------------------------------  
 # IBM-HSL-IP : UDP Application Flash
 #------------------------------------------------------------------------------
-set ipModName "TriangleAppllication"
+set ipModName "TriangleApplication"
 set ipName    "triangle_app"
 set ipVendor  "IBM"
 set ipLibrary "hls"

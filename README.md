@@ -22,11 +22,11 @@ Then the packets will be send from Terminal 1 to 2.
 For more details, `tcpdump -i <interface> -nn -s0 -vv -X port 2718` could be helpful. 
 
 
-The *Role* is the same for both FPGAs, because which destination the packets will have is determined by the `node_id`/`node_rank`
-(VHDL ports `piFMC_ROLE_rank` and `piFMC_ROLE_size`).
+The *Role* is the same for both FPGAs, because which destination the packets will have is determined by the `node_id`/`node_rank` and `cluster_size`
+(VHDL ports`piFMC_ROLE_rank` and `piFMC_ROLE_size`).
 
 
-The *Role will forward the packet always to `(node_rank + 1 % cluster_size)`* (for UDP and TCP packets), so this example works also for more or less then three FPGAs, actually.
+The **Role forwards the packet always to `(node_rank + 1) % cluster_size`** (for UDP and TCP packets), so this example works also for more or less then two FPGAs, actually.
 
 
 

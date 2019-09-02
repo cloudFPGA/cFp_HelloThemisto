@@ -281,6 +281,8 @@ architecture Flash of Role_Themisto is
   --============================================================================  
   signal sUdpPostCnt : std_ulogic_vector(9 downto 0);
   signal sTcpPostCnt : std_ulogic_vector(9 downto 0);
+  
+  signal sMemTestDebugOut : std_logic_vector(15 downto 0);
 
   --===========================================================================
   --== COMPONENT DECLARATIONS
@@ -420,6 +422,9 @@ begin
 
   --  EMIF_inv <= (not piSHL_ROL_EMIF_2B_Reg(7 downto 0)) when piSHL_ROL_EMIF_2B_Reg(15) = '1' else 
   --              x"BE" ;
+  
+  poSHL_Mmio_RdReg <= sMemTestDebugOut when (unsigned(piSHL_Mmio_WrReg) /= 0) else 
+   x"FEEB"; 
 
 
   --################################################################################
@@ -587,7 +592,8 @@ begin
             piMMIO_diag_ctrl_V         => piSHL_Mmio_Mc1_MemTestCtrl,
             piMMIO_diag_ctrl_V_ap_vld  => '1',
             poMMIO_diag_stat_V         => poSHL_Mmio_Mc1_MemTestStat,
-            poDebug_V                  => poSHL_Mmio_RdReg,
+            --poDebug_V                  => poSHL_Mmio_RdReg,
+            poDebug_V                  => sMemTestDebugOut,
 
             soMemRdCmdP0_TDATA         => soSHL_Mem_Mp0_RdCmd_tdata,
             soMemRdCmdP0_TVALID        => soSHL_Mem_Mp0_RdCmd_tvalid,

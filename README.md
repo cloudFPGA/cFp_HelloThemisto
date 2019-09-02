@@ -7,21 +7,28 @@ cloudFPGA project (cFp) for a triangle communication example
     /\___________________|
 ```
 
-All communication goes over the *UDP port 2718*. Hence, the CPU should run:
+All communication goes over the *UDP/TCP port 2718*. Hence, the CPU should run:
 ```bash
 $ ping <FPGA 1>
 $ ping <FPGA 2>
 # Terminal 1
-nc -u <FPGA 1> 2718
+nc -u <FPGA 1> 2718   # without -u for TCP
 # Terminal 2
-nc -lu 2817
+nc -lu 2817           # without -u for TCP
 ```
 
 Then the packets will be send from Terminal 1 to 2. 
 
-The *Role* is the same for both FPGAs, 
-because which destination the packets will have is determined by the `node_id`/`node_rank`
-(VHDL port `piSMC_ROLE_rank`).
+For more details, `tcpdump -i <interface> -nn -s0 -vv -X port 2718` could be helpful. 
+
+
+The *Role* is the same for both FPGAs, because which destination the packets will have is determined by the `node_id`/`node_rank` and `cluster_size`
+(VHDL ports`piFMC_ROLE_rank` and `piFMC_ROLE_size`).
+
+
+The **Role forwards the packet always to `(node_rank + 1) % cluster_size`** (for UDP and TCP packets), so this example works also for more or less then two FPGAs, actually.
+
+
 
 For distributing the routing tables, **`POST /cluster`** must be used.
 The following depicts an example API call, assuming that the cFp_Triangle bitfile was uploaded as image`d8471f75-880b-48ff-ac1a-baa89cc3fbc9`:

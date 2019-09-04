@@ -424,7 +424,7 @@ begin
   --              x"BE" ;
 
   poSHL_Mmio_RdReg <= sMemTestDebugOut when (unsigned(piSHL_Mmio_WrReg) /= 0) else 
-   x"FEEB"; 
+   x"EFBE"; 
 
   --################################################################################
   --#                                                                              #

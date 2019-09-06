@@ -21,7 +21,7 @@
 #include "ap_int.h"
 #include <stdint.h>
 
-#include "../../../../cFDK/SRA/LIB/hls/network.hpp"
+#include "../../../../../cFDK/SRA/LIB/hls/network.hpp"
 
 using namespace hls;
 

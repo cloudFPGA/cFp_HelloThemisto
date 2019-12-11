@@ -35,7 +35,9 @@ entity Role_Themisto is
     --------------------------------------------------------
     piSHL_156_25Clk                     : in    std_ulogic;
     piSHL_156_25Rst                     : in    std_ulogic;   
-    piTOP_156_25Rst_delayed             : in    std_ulogic; -- [TODO - Get rid of this delayed reset]
+    -- LY7 Enable and Reset
+    piMMIO_Ly7_Rst                      : in    std_ulogic;
+    piMMIO_Ly7_En                       : in    std_ulogic;
 
     ------------------------------------------------------
     -- SHELL / Role / Nts0 / Udp Interface
@@ -521,7 +523,8 @@ begin
              ------------------------------------------------------
              ap_clk                      => piSHL_156_25Clk,
              ap_rst_n                    => (not piSHL_156_25Rst),
-             ap_start                    => '1',
+             --ap_start                    => '1',
+             ap_start                    => piMMIO_Ly7_En,
           
              piFMC_ROL_rank_V         => piFMC_ROLE_rank,
              --piFMC_ROL_rank_V_ap_vld  => '1',
@@ -579,14 +582,15 @@ begin
   soSHL_Mem_Mp0_Write_tlast <= sWriteTlastAsVector(0);
   --sResetAsVector(0) <= piSHL_156_25Rst;
   --sResetAsVector(0) <= piSHL_ROL_EMIF_2B_Reg(0);
-  sResetAsVector(0) <= piTOP_156_25Rst_delayed;
+  sResetAsVector(0) <= piMMIO_Ly7_Rst;
 
   MEM_TEST: MemTestFlash 
   port map(
             ap_clk                     => piSHL_156_25Clk,
             ap_rst_n                   => (not piSHL_156_25Rst),
             --ap_rst_n                   => '1',
-            ap_start                   => '1',
+            --ap_start                   => '1',
+            ap_start                   => piMMIO_Ly7_En,
             piSysReset_V               => sResetAsVector,
             piSysReset_V_ap_vld        => '1',
             piMMIO_diag_ctrl_V         => piSHL_Mmio_Mc1_MemTestCtrl,

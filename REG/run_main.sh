@@ -38,7 +38,7 @@ export cFpDcpDir="$rootDir/dcps/"
 export roleName1="R1"
 export roleName2="R2"
 
-also, we need a license:
+#also, we need a license:
 export XILINXD_LICENSE_FILE=2100@pokwinlic1.pok.ibm.com:2100@pokwinlic2.pok.ibm.com:2100@pokwinlic3.pok.ibm.com
 
 

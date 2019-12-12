@@ -7,7 +7,7 @@ A regression is executed by calling a shell script such as:
   - `run_main.sh` which performs a '_build monolithic_' of the FPGA followed by a RTL/CO-SIMULATION of the HLS-based IP cores.
 
 **Warning**
-The above scripts must be executed from the cFp_Triangle root directory which must be defined ahead with the _$cFpFlashRootDir_ variable. Any other environment variable must also be sourced beforehand.
+The above scripts must be executed from the cFp_Triangle root directory which must be defined ahead with the _$cFpRootDir_ variable. Any other environment variable must also be sourced beforehand.
 
 **Example** 
 The main cFp_Triangle script can be called as follows:
@@ -16,9 +16,9 @@ The main cFp_Triangle script can be called as follows:
 source /tools/Xilinx/Vivado/2017.4/settings64.sh
 
 echo $PWD
-export cFpFlashRootDir=$PWD
+export cFpRootDir=$PWD
 
-$cFpFlashRootDir/REG/run_main.sh
+$cFpRootDir/REG/run_main.sh
 ```
 
 **About the _run_main_ script**  

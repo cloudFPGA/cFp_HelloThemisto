@@ -27,7 +27,7 @@ function exit_on_error {
 }
 
 # STEP-0: We need to set the right environment
-export rootDir=$cFpFlashRootDir 
+export rootDir=$cFpRootDir 
 export cFpIpDir="$rootDir/ip/"
 export cFpMOD="FMKU60"
 export usedRoleDir="$rootDir/ROLE/1/"
@@ -54,7 +54,7 @@ echo "================================================================"
 echo "===   REGRESSION - START OF BUILD: 'monolithic' "
 echo "===     $0"
 echo "================================================================"
-cd $cFpFlashRootDir 
+cd $cFpRootDir 
 #make testError
 make full_clean #just to be sure...
 make monolithic

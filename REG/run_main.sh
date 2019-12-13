@@ -64,6 +64,20 @@ echo "===   REGRESSION - END OF BUILD  : 'monolithic' "
 echo "===     $0"
 echo "================================================================"
 
+
+echo "================================================================"
+echo "===   REGRESSION - START OF BUILD: 'pr_full' "
+echo "===     $0"
+echo "================================================================"
+cd $cFpRootDir 
+make clean 
+make pr_full
+exit_on_error $? 
+echo "================================================================"
+echo "===   REGRESSION - END OF BUILD  : 'pr_full' "
+echo "===     $0"
+echo "================================================================"
+
 # we don't need this here
 #echo "================================================================"
 #echo "===   REGRESSION - START OF COSIM "

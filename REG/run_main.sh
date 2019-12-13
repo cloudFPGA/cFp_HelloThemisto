@@ -27,7 +27,7 @@ function exit_on_error {
 }
 
 # STEP-0: We need to set the right environment
-export rootDir=$cFpRootDir 
+export rootDir="$cFpRootDir/"  #the / is IMPORTANT
 export cFpIpDir="$rootDir/ip/"
 export cFpMOD="FMKU60"
 export usedRoleDir="$rootDir/ROLE/1/"

@@ -56,9 +56,9 @@ echo "===     $0"
 echo "================================================================"
 cd $cFpRootDir 
 #make testError
-#make full_clean #just to be sure...
-#make monolithic
-#exit_on_error $? 
+make full_clean #just to be sure...
+make monolithic
+exit_on_error $? 
 echo "================================================================"
 echo "===   REGRESSION - END OF BUILD  : 'monolithic' "
 echo "===     $0"

@@ -135,7 +135,7 @@ monolithic_incr: monobasecmd $(MONO_LOCK) incrcmd monofinalcmd
 #
 #monolithic_incr_debug: monobasecmd debugcmd $(MONO_LOCK) monofinalcmd
 
-monolithic_debug: basecmd debugcmd $(MONO_LOCK) monofinalcmd
+monolithic_debug: monobasecmd debugcmd $(MONO_LOCK) monofinalcmd
 
 save_mono_incr: 
 	@# no dependencies, vivado should better fail on itslef 

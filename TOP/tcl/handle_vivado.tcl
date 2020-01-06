@@ -578,6 +578,12 @@ if { ${synth} } {
 
     #secureSynth
     #guidedSynth
+    
+    #ensure synth finished successfull
+    if {[get_property STATUS [get_runs synth_1]] != {synth_design Complete!}} {
+      my_err_puts " SYNTHESIS FAILED"
+      exit ${KO}
+    }
 
     if { ! $forceWithoutBB } { 
       open_run synth_1 -name synth_1
@@ -670,7 +676,7 @@ if { ${impl1} || ( $forceWithoutBB && $impl1 ) } {
     if { $insert_ila } { 
      set constrObj [ get_filesets constrs_1 ]
      #add_files -fileset ${constrObj} ${xdcDir}/debug.xdc 
-     add_files -fileset ${constrObj} ../debug.xdc 
+     add_files -fileset ${constrObj} ${rootDir}/TOP/xdc/debug.xdc 
      my_info_puts "DEBUG XDC ADDED."
     }
   
@@ -845,7 +851,7 @@ if { $pr_grey_impl } {
   
   update_design -cell ROLE -buffer_ports
   
-  source ${tcpTopDir}/fix_things.tcl 
+  source ${tclTopDir}/fix_things.tcl 
   
   my_puts "################################################################################"
   my_puts "##"
@@ -941,7 +947,7 @@ if { $bitGen1 || $bitGen2 || $pr_grey_bitgen } {
         if { $bitGen1 } { 
           open_checkpoint ${dcpDir}/2_${topName}_impl_${usedRole}_complete_pr.dcp 
           
-          source ${tcpTopDir}/fix_things.tcl 
+          source ${tclTopDir}/fix_things.tcl 
           #source ./fix_things.tcl 
           if { $only_pr_bitgen } {
             write_bitstream -bin_file -cell ROLE -force ${dcpDir}/4_${topName}_impl_${curImpl}_pblock_ROLE_partial 
@@ -955,7 +961,7 @@ if { $bitGen1 || $bitGen2 || $pr_grey_bitgen } {
         
       } else {
         open_checkpoint ${dcpDir}/2_${topName}_impl_${usedRole}_complete.dcp 
-        source ${tcpTopDir}/fix_things.tcl 
+        source ${tclTopDir}/fix_things.tcl 
         #source ./fix_things.tcl 
         write_bitstream -force ${dcpDir}/4_${topName}_impl_${curImpl}.bit
         #close_project
@@ -967,7 +973,7 @@ if { $bitGen1 || $bitGen2 || $pr_grey_bitgen } {
         set curImpl ${usedRole2}
         
         #source ./fix_things.tcl 
-        source ${tcpTopDir}/fix_things.tcl 
+        source ${tclTopDir}/fix_things.tcl 
         if { $only_pr_bitgen } {
           write_bitstream -bin_file -cell ROLE -force ${dcpDir}/4_${topName}_impl_${curImpl}_pblock_ROLE_partial 
           # no file extenstions .bit/.bin here!
@@ -981,7 +987,7 @@ if { $bitGen1 || $bitGen2 || $pr_grey_bitgen } {
         open_checkpoint ${dcpDir}/3_${topName}_impl_grey_box.dcp 
         set curImpl "grey_box"
         
-        source ${tcpTopDir}/fix_things.tcl 
+        source ${tclTopDir}/fix_things.tcl 
         # source ./fix_things.tcl 
         write_bitstream -force ${dcpDir}/4_${topName}_impl_${curImpl}.bit
         #close_project
@@ -1010,7 +1016,7 @@ if { $bitGen1 || $bitGen2 || $pr_grey_bitgen } {
 # Close project
 #-------------------------------------------------------------------------------
 catch {close_project}
-
+exit ${VERIFY_RETVAL}
 
 
 

@@ -34,7 +34,7 @@ entity Role_Themisto is
     -- SHELL / Global Input Clock and Reset Interface
     --------------------------------------------------------
     piSHL_156_25Clk                     : in    std_ulogic;
-    piSHL_156_25Rst                     : in    std_ulogic;   
+    piSHL_156_25Rst                     : in    std_ulogic;
     -- LY7 Enable and Reset
     piMMIO_Ly7_Rst                      : in    std_ulogic;
     piMMIO_Ly7_En                       : in    std_ulogic;
@@ -283,7 +283,7 @@ architecture Flash of Role_Themisto is
   --============================================================================  
   signal sUdpPostCnt : std_ulogic_vector(9 downto 0);
   signal sTcpPostCnt : std_ulogic_vector(9 downto 0);
-  
+
   signal sMemTestDebugOut : std_logic_vector(15 downto 0);
 
   --===========================================================================
@@ -296,7 +296,7 @@ architecture Flash of Role_Themisto is
       ------------------------------------------------------
            ap_clk                      : in  std_logic;
            ap_rst_n                    : in  std_logic;
-           ap_start                    : in  std_logic;
+           --ap_start                    : in  std_logic;
 
       -- rank and size
            piFMC_ROL_rank_V        : in std_logic_vector (31 downto 0);
@@ -424,10 +424,9 @@ begin
 
   --  EMIF_inv <= (not piSHL_ROL_EMIF_2B_Reg(7 downto 0)) when piSHL_ROL_EMIF_2B_Reg(15) = '1' else 
   --              x"BE" ;
-  
-  poSHL_Mmio_RdReg <= sMemTestDebugOut when (unsigned(piSHL_Mmio_WrReg) /= 0) else 
-   x"0DF0"; 
 
+  poSHL_Mmio_RdReg <= sMemTestDebugOut when (unsigned(piSHL_Mmio_WrReg) /= 0) else 
+   x"EFBE"; 
 
   --################################################################################
   --#                                                                              #
@@ -455,7 +454,7 @@ begin
              ------------------------------------------------------
              ap_clk                      => piSHL_156_25Clk,
              ap_rst_n                    => (not piSHL_156_25Rst),
-             ap_start                    => '1',
+             --ap_start                    => '1',
             
              piFMC_ROL_rank_V         => piFMC_ROLE_rank,
              --piFMC_ROL_rank_V_ap_vld  => '1',
@@ -524,7 +523,7 @@ begin
              ap_clk                      => piSHL_156_25Clk,
              ap_rst_n                    => (not piSHL_156_25Rst),
              --ap_start                    => '1',
-             ap_start                    => piMMIO_Ly7_En,
+             --ap_start                    => piMMIO_Ly7_En,
           
              piFMC_ROL_rank_V         => piFMC_ROLE_rank,
              --piFMC_ROL_rank_V_ap_vld  => '1',

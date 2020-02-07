@@ -14,7 +14,7 @@ $ ping <FPGA 2>
 # Terminal 1
 nc -u <FPGA 1> 2718   # without -u for TCP
 # Terminal 2
-nc -lu 2817           # without -u for TCP
+nc -lu 2718           # without -u for TCP
 ```
 
 Then the packets will be send from Terminal 1 to 2. 

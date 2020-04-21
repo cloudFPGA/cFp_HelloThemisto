@@ -34,3 +34,15 @@ For distributing the routing tables, **`POST /cluster`** must be used.
 The following depicts an example API call, assuming that the cFp_Triangle bitfile was uploaded as image`d8471f75-880b-48ff-ac1a-baa89cc3fbc9`:
 ![POST /cluster example](./doc/post_cluster.png)
 
+## Firewall issues
+
+Some firewalls may block network packets if there is not a connection to the remote machine/port. 
+Hence, to get the Triangle example to work, the following commands may be necessary to be executed (as root):
+```
+$ firewall-cmd --zone=public --add-port=2718-2750/udp --permanent
+$ firewall-cmd --reload
+```
+
+Also, ensure that the network secuirty group settings are updated (e.g. in case of the ZYC2 OpenStack).
+
+

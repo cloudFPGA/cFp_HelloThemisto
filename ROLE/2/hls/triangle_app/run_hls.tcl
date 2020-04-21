@@ -57,7 +57,7 @@ set_top       ${projectName}
 add_files     ${srcDir}/${projectName}.cpp -cflags "-I$env(cFpRootDir)/cFDK/SRA/LIB/hls"
 add_files     ${srcDir}/${projectName}.hpp -cflags "-I$env(cFpRootDir)/cFDK/SRA/LIB/hls"
 
-add_files -tb ${testDir}/test_${projectName}.cpp
+add_files -tb ${testDir}/test_${projectName}.cpp -cflags "-I$env(cFpRootDir)/cFDK/SRA/LIB/hls"
 
 # Create a solution
 #-------------------------------------------------

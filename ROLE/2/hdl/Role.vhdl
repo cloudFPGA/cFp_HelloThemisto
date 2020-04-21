@@ -296,7 +296,7 @@ architecture Flash of Role_Themisto is
       ------------------------------------------------------
            ap_clk                      : in  std_logic;
            ap_rst_n                    : in  std_logic;
-           --ap_start                    : in  std_logic;
+           ap_start                    : in  std_logic;
 
       -- rank and size
            piFMC_ROL_rank_V        : in std_logic_vector (31 downto 0);
@@ -453,8 +453,8 @@ begin
              -- From SHELL / Clock and Reset
              ------------------------------------------------------
              ap_clk                      => piSHL_156_25Clk,
-             ap_rst_n                    => (not piSHL_156_25Rst),
-             --ap_start                    => '1',
+             ap_rst_n                    => (not piMMIO_Ly7_Rst),
+             ap_start                    => piMMIO_Ly7_En,
             
              piFMC_ROL_rank_V         => piFMC_ROLE_rank,
              --piFMC_ROL_rank_V_ap_vld  => '1',
@@ -521,9 +521,8 @@ begin
              -- From SHELL / Clock and Reset
              ------------------------------------------------------
              ap_clk                      => piSHL_156_25Clk,
-             ap_rst_n                    => (not piSHL_156_25Rst),
-             --ap_start                    => '1',
-             --ap_start                    => piMMIO_Ly7_En,
+             ap_rst_n                    => (not piMMIO_Ly7_Rst),
+             ap_start                    => piMMIO_Ly7_En,
           
              piFMC_ROL_rank_V         => piFMC_ROLE_rank,
              --piFMC_ROL_rank_V_ap_vld  => '1',

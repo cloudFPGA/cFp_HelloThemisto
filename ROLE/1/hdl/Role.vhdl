@@ -414,19 +414,8 @@ architecture Flash of Role_Themisto is
 
 begin
 
-  --  -- write constant to EMIF Register to test read out 
-  --  --poROL_SHL_EMIF_2B_Reg <= x"EF" & EMIF_inv; 
-  --  poROL_SHL_EMIF_2B_Reg( 7 downto 0)  <= EMIF_inv; 
-  --  poSHL_Mmio_RdReg(11 downto 8) <= piFMC_ROLE_rank(3 downto 0) when (unsigned(piFMC_ROLE_rank) /= 0) else 
-  --  x"F"; 
-  --  poSHL_Mmio_RdReg(15 downto 12) <= piFMC_ROLE_size(3 downto 0) when (unsigned(piFMC_ROLE_size) /= 0) else 
-  --  x"E"; 
-
-  --  EMIF_inv <= (not piSHL_ROL_EMIF_2B_Reg(7 downto 0)) when piSHL_ROL_EMIF_2B_Reg(15) = '1' else 
-  --              x"BE" ;
-
   poSHL_Mmio_RdReg <= sMemTestDebugOut when (unsigned(piSHL_Mmio_WrReg) /= 0) else 
-   x"EFBE"; 
+   x"BEEF"; 
 
   --################################################################################
   --#                                                                              #

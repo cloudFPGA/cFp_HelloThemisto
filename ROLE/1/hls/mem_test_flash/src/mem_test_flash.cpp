@@ -426,7 +426,11 @@ void mem_test_flash_main(
 
   }  // End: switch
 
-  *debug_out = debugVec;
+  ap_uint<16> debug_out_BE = 0x0;
+  debug_out_BE  = (ap_uint<32>) ((debugVec >> 8) & 0xFF);
+  debug_out_BE |= (ap_uint<32>) ((debugVec << 8) & 0xFF00);
+
+  *debug_out = debug_out_BE;
 
   return;
 }

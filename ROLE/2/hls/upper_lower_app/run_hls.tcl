@@ -22,7 +22,7 @@
 
 # User defined settings
 #-------------------------------------------------
-set projectName    "triangle_app"
+set projectName    "upper_lower_app"
 set solutionName   "solution1"
 set xilPartName    "xcku060-ffva1156-2-i"
 

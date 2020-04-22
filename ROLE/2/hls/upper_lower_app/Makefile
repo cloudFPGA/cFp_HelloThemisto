@@ -15,7 +15,7 @@
 # ******************************************************************************
 
 # Name of the HLS core to build
-ipName =triangle_app
+ipName =upper_lower_app
 
 DEPS := $(shell find ./src/ -type f)
 
@@ -37,11 +37,11 @@ ${ipName}_prj/solution1/impl/ip: $(DEPS)
 	@touch $@
 	@touch ../../.ip_guard
 
-csim: assert_env
+csim: assert_env clean
 	export hlsSim=1; export hlsCoSim=0; vivado_hls -f run_hls.tcl
 
 
-cosim: assert_env
+cosim: assert_env clean
 	@#rm -rf ${ipName}_prj
 	export hlsSim=0; export hlsCoSim=1; vivado_hls -f run_hls.tcl
 

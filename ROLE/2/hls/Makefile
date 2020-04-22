@@ -10,9 +10,9 @@
 # *
 # ******************************************************************************
 
-.PHONY: all clean mem_test_flash triangle_app
+.PHONY: all clean mem_test_flash upper_lower_app
 
-all: mem_test_flash triangle_app
+all: mem_test_flash upper_lower_app
 
 
 *:

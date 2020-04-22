@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <hls_stream.h>
 
-#include "../src/triangle_app.hpp"
+#include "../src/upper_lower_app.hpp"
 
 using namespace std;
 
@@ -44,7 +44,7 @@ ap_uint<32>             s_udp_rx_ports = 0x0;
 stream<NetworkMetaStream>   siUdp_meta          ("siUdp_meta");
 stream<NetworkMetaStream>   soUdp_meta          ("soUdp_meta");
 ap_uint<32>             node_rank;
-ap_uint<32>             size;
+ap_uint<32>             cluster_size;
 
 //------------------------------------------------------
 //-- TESTBENCH GLOBAL VARIABLES
@@ -58,8 +58,8 @@ int         simCnt;
  * @return Nothing.
  ******************************************************************************/
 void stepDut() {
-    triangle_app(
-        &node_rank, &size,
+    upper_lower_app(
+        &node_rank, &cluster_size,
       sSHL_Uaf_Data, sUAF_Shl_Data,
       siUdp_meta, soUdp_meta,
       &s_udp_rx_ports);
@@ -232,9 +232,9 @@ int main() {
         NetworkMeta tmp_meta = NetworkMeta(1,DEFAULT_RX_PORT,0,DEFAULT_RX_PORT,0);
         siUdp_meta.write(NetworkMetaStream(tmp_meta));
         siUdp_meta.write(NetworkMetaStream(tmp_meta));
-        //set correct node_rank and size
+        //set correct node_rank and cluster_size
         node_rank = 1;
-        size = 3;
+        cluster_size = 3;
     }
 
     //------------------------------------------------------
@@ -291,7 +291,7 @@ int main() {
         printf("NRC received NRCmeta stream from rank %d to rank %d.\n", (int) tmp_meta.tdata.src_rank, (int) tmp_meta.tdata.dst_rank);
         assert(tmp_meta.tdata.src_rank == node_rank);
         //ensure forwarding behavior
-        assert(tmp_meta.tdata.dst_rank == ((tmp_meta.tdata.src_rank + 1) % size));
+        assert(tmp_meta.tdata.dst_rank == ((tmp_meta.tdata.src_rank + 1) % cluster_size));
       }
       assert(i == 2);
     } else {
@@ -300,21 +300,26 @@ int main() {
       }
 
     //------------------------------------------------------
-    //-- STEP-4 : COMPARE INPUT AND OUTPUT FILE STREAMS
+    //-- STEP-4 : COMPARE VERIFICATION AND OUTPUT FILE STREAMS
     //------------------------------------------------------
     int rc1 = system("diff --brief -w -i -y ../../../../test/ofsUAF_Shl_Data.dat \
-                                            ../../../../test/ifsSHL_Uaf_Data.dat");
+                                            ../../../../test/verify_UAF_Shl_Data.dat");
     if (rc1)
-        printf("## Error : File \'ofsUAF_Shl_Data.dat\' does not match \'ifsSHL_Uaf_Data.dat\'.\n");
+    {
+        printf("## Error : File \'ofsUAF_Shl_Data.dat\' does not match \'verify_UAF_Shl_Data.dat\'.\n");
+    } else {
+      printf("Output data in file \'ofsUAF_Shl_Data.dat\' verified.\n");
+    }
 
     nrErr += rc1;
 
     printf("#####################################################\n");
-    if (nrErr)
+    if (nrErr) 
+    {
         printf("## ERROR - TESTBENCH FAILED (RC=%d) !!!             ##\n", nrErr);
-    else
+    } else {
         printf("## SUCCESSFULL END OF TESTBENCH (RC=0)             ##\n");
-
+    }
     printf("#####################################################\n");
 
     return(nrErr);

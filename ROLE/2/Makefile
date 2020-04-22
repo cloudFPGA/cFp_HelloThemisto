@@ -28,7 +28,7 @@ all: assert_env Role_$(cFpSRAtype)_OOC.dcp ## builds the Out-Of-Contect (OOC) De
 assert_env: 
 	@../../cFDK/SRA/LIB/bash/assert_envs.sh
 
-Role_$(cFpSRAtype)_OOC.dcp: ./hdl ./ip ./tcl  ## builds the Out-Of-Contect (OOC) Design-Checkpoint (dcp) for this Role (default)
+Role_$(cFpSRAtype)_OOC.dcp: ./hdl ./ip ./tcl/run_pr.tcl ./tcl/xpr_settings_role.tcl  ## builds the Out-Of-Contect (OOC) Design-Checkpoint (dcp) for this Role (default)
 	cd ./tcl/; vivado -mode batch -source run_pr.tcl -notrace -log run_pr.log -tclargs -force
 
 hls_cores:

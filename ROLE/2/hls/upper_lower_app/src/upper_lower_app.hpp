@@ -6,7 +6,7 @@
 //  *     Authors: FAB, WEI, NGL
 //  *
 //  *     Description:
-//  *        The Role for a Triangle Example application (UDP or TCP)
+//  *        The Role for an ASCII case invert application (UDP or TCP)
 //  *
 
 #ifndef _ROLE_TRIANGLE_H_
@@ -27,7 +27,6 @@
 using namespace hls;
 
 
-
 #define WAIT_FOR_META 0
 #define WAIT_FOR_STREAM_PAIR 1
 #define PROCESSING_PACKET 2
@@ -38,7 +37,7 @@ using namespace hls;
 #define DEFAULT_RX_PORT 2718
 
 
-void triangle_app(
+void upper_lower_app(
 
     ap_uint<32>             *pi_rank,
     ap_uint<32>             *pi_size,

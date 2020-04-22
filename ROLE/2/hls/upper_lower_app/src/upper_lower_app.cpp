@@ -6,10 +6,10 @@
 //  *     Authors: FAB, WEI, NGL
 //  *
 //  *     Description:
-//  *        The Role for a Triangle Example application (UDP or TCP)
+//  *        The Role for an ASCII case invert application (UDP or TCP)
 //  *
 
-#include "triangle_app.hpp"
+#include "upper_lower_app.hpp"
 
 
 stream<NetworkWord>       sRxpToTxp_Data("sRxpToTxP_Data");
@@ -19,13 +19,63 @@ PacketFsmType enqueueFSM = WAIT_FOR_META;
 PacketFsmType dequeueFSM = WAIT_FOR_STREAM_PAIR;
 
 
+uint8_t upper(uint8_t a)
+{
+  if( (a >= 0x61) && (a <= 0x7a) )
+  {
+    a -= 0x20;
+  }
+  return a;
+}
+
+
+
+uint8_t lower(uint8_t a)
+{
+  if( (a >= 0x41) && (a <= 0x5a) )
+  {
+    a += 0x20;
+  }
+  return a;
+}
+
+uint8_t invert_case(uint8_t a)
+{
+  uint8_t ret = 0x0;
+  if( (a >= 0x41) && (a <= 0x5a) )
+  {
+    ret = a + 0x20;
+  }
+  else if( (a >= 0x61) && (a <= 0x7a) )
+  {
+    ret = a - 0x20;
+  } else {
+    ret = a;
+  }
+  return ret;
+}
+
+
+uint64_t invert_word(uint64_t input)
+{
+  uint64_t output = 0x0;
+  for(uint8_t i = 0; i < 8; i++)
+  {
+#pragma HLS unroll factor=8
+    output |= ((uint64_t) invert_case((uint8_t) (input >> i*8))) << i*8;
+  }
+  return output;
+}
+
+
+
 /*****************************************************************************
  * @brief   Main process of the UDP/Tcp Triangle Application
  * @ingroup udp_app_flash
  *
  * @return Nothing.
  *****************************************************************************/
-void triangle_app(
+void upper_lower_app(
 
     ap_uint<32>             *pi_rank,
     ap_uint<32>             *pi_size,
@@ -41,7 +91,7 @@ void triangle_app(
 {
 
   //-- DIRECTIVES FOR THE BLOCK ---------------------------------------------
-// #pragma HLS INTERFACE ap_ctrl_none port=return
+ //#pragma HLS INTERFACE ap_ctrl_none port=return
 
   //#pragma HLS INTERFACE ap_stable     port=piSHL_This_MmioEchoCtrl
 
@@ -58,8 +108,11 @@ void triangle_app(
 
   //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
 #pragma HLS DATAFLOW interval=1
+//#pragma HLS STREAM variable=sRxpToTxp_Data depth=1500 
+//#pragma HLS STREAM variable=sRxtoTx_Meta depth=1500 
 #pragma HLS reset variable=enqueueFSM
 #pragma HLS reset variable=dequeueFSM
+
 
 
 
@@ -68,6 +121,7 @@ void triangle_app(
   //-- LOCAL VARIABLES ------------------------------------------------------
   NetworkWord udpWord;
   NetworkWord  udpWordTx;
+  NetworkWord newWord;
   NetworkMetaStream  meta_tmp = NetworkMetaStream();
   NetworkMeta  meta_in = NetworkMeta();
 
@@ -89,7 +143,8 @@ void triangle_app(
       {
         //-- Read incoming data chunk
         udpWord = siSHL_This_Data.read();
-        sRxpToTxp_Data.write(udpWord);
+        newWord = NetworkWord(invert_word(udpWord.tdata), udpWord.tkeep, udpWord.tlast);
+        sRxpToTxp_Data.write(newWord);
         if(udpWord.tlast == 1)
         {
           enqueueFSM = WAIT_FOR_META;
@@ -104,7 +159,7 @@ void triangle_app(
     case WAIT_FOR_STREAM_PAIR:
       //-- Forward incoming chunk to SHELL
       if ( !sRxpToTxp_Data.empty() && !sRxtoTx_Meta.empty() 
-          && !soTHIS_Shl_Data.full() &&  !soNrc_meta.full() ) //TODO: split up?
+          && !soTHIS_Shl_Data.full() &&  !soNrc_meta.full() ) 
       {
         udpWordTx = sRxpToTxp_Data.read();
         soTHIS_Shl_Data.write(udpWordTx);
@@ -112,12 +167,12 @@ void triangle_app(
         meta_in = sRxtoTx_Meta.read().tdata;
         NetworkMetaStream meta_out_stream = NetworkMetaStream();
         meta_out_stream.tlast = 1;
-        meta_out_stream.tkeep = 0xFF; //just to be sure!
+        meta_out_stream.tkeep = 0xFF; //just to be sure
 
         //printf("rank: %d; size: %d; \n", (int) *pi_rank, (int) *pi_size);
         meta_out_stream.tdata.dst_rank = (*pi_rank + 1) % *pi_size;
         //printf("meat_out.dst_rank: %d\n", (int) meta_out_stream.tdata.dst_rank);
-        
+
         meta_out_stream.tdata.dst_port = DEFAULT_TX_PORT;
         meta_out_stream.tdata.src_rank = (NodeId) *pi_rank;
         meta_out_stream.tdata.src_port = DEFAULT_RX_PORT;

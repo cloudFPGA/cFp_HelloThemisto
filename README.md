@@ -3,8 +3,8 @@ cloudFPGA project (cFp) for a triangle communication example
 
 **Idea**:
 ```
-   CPU  -->  FPGA  -->  FPGA 
-    /\___________________|
+   CPU  (... -->  FPGA ... ) -->  FPGA 
+    /\_____________________________|
 ```
 
 All communication goes over the *UDP/TCP port 2718*. Hence, the CPU should run:
@@ -20,7 +20,6 @@ nc -lu 2718           # without -u for TCP
 Then the packets will be send from Terminal 1 to 2. 
 
 For more details, `tcpdump -i <interface> -nn -s0 -vv -X port 2718` could be helpful. 
-
 
 The *Role* is the same for both FPGAs, because which destination the packets will have is determined by the `node_id`/`node_rank` and `cluster_size`
 (VHDL ports`piFMC_ROLE_rank` and `piFMC_ROLE_size`).
@@ -40,6 +39,7 @@ Some firewalls may block network packets if there is not a connection to the rem
 Hence, to get the Triangle example to work, the following commands may be necessary to be executed (as root):
 ```
 $ firewall-cmd --zone=public --add-port=2718-2750/udp --permanent
+$ firewall-cmd --zone=public --add-port=2718-2750/tcp --permanent
 $ firewall-cmd --reload
 ```
 

@@ -1248,11 +1248,12 @@ set_property MARK_DEBUG true [get_nets {SHELL/ssNRC_TOE_Tcp_DReq_tdata[20]}]
 set_property MARK_DEBUG true [get_nets {SHELL/ssNRC_TOE_Tcp_DReq_tdata[23]}]
 set_property MARK_DEBUG true [get_nets {SHELL/ssNRC_TOE_Tcp_DReq_tdata[26]}]
 set_property MARK_DEBUG true [get_nets {SHELL/ssNRC_TOE_Tcp_DReq_tdata[29]}]
+
 create_debug_core u_ila_0 ila
 set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
 set_property ALL_PROBE_SAME_MU_CNT 4 [get_debug_cores u_ila_0]
 set_property C_ADV_TRIGGER true [get_debug_cores u_ila_0]
-set_property C_DATA_DEPTH 32768 [get_debug_cores u_ila_0]
+set_property C_DATA_DEPTH 16384 [get_debug_cores u_ila_0]
 set_property C_EN_STRG_QUAL true [get_debug_cores u_ila_0]
 set_property C_INPUT_PIPE_STAGES 0 [get_debug_cores u_ila_0]
 set_property C_TRIGIN_EN false [get_debug_cores u_ila_0]

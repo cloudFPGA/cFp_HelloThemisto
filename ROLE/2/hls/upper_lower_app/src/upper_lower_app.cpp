@@ -183,6 +183,7 @@ void upper_lower_app(
           dequeueFSM = PROCESSING_PACKET;
         }
       }
+      break;
 
     case PROCESSING_PACKET: 
       if( !sRxpToTxp_Data.empty() && !soTHIS_Shl_Data.full())
@@ -196,6 +197,7 @@ void upper_lower_app(
         }
 
       }
+      break;
   }
 
 }

@@ -103,67 +103,67 @@ entity Role_Themisto is
     --------------------------------------------------------
     ---- Memory Port #0 / S2MM-AXIS ----------------   
     ------ Stream Read Command ---------
-    soSHL_Mem_Mp0_RdCmd_tdata           : out   std_ulogic_vector( 79 downto 0);
-    soSHL_Mem_Mp0_RdCmd_tvalid          : out   std_ulogic;
-    soSHL_Mem_Mp0_RdCmd_tready          : in    std_ulogic;
+    soMEM_Mp0_RdCmd_tdata           : out   std_ulogic_vector( 79 downto 0);
+    soMEM_Mp0_RdCmd_tvalid          : out   std_ulogic;
+    soMEM_Mp0_RdCmd_tready          : in    std_ulogic;
     ------ Stream Read Status ----------
-    siSHL_Mem_Mp0_RdSts_tdata           : in    std_ulogic_vector(  7 downto 0);
-    siSHL_Mem_Mp0_RdSts_tvalid          : in    std_ulogic;
-    siSHL_Mem_Mp0_RdSts_tready          : out   std_ulogic;
+    siMEM_Mp0_RdSts_tdata           : in    std_ulogic_vector(  7 downto 0);
+    siMEM_Mp0_RdSts_tvalid          : in    std_ulogic;
+    siMEM_Mp0_RdSts_tready          : out   std_ulogic;
     ------ Stream Data Input Channel ---
-    siSHL_Mem_Mp0_Read_tdata            : in    std_ulogic_vector(511 downto 0);
-    siSHL_Mem_Mp0_Read_tkeep            : in    std_ulogic_vector( 63 downto 0);
-    siSHL_Mem_Mp0_Read_tlast            : in    std_ulogic;
-    siSHL_Mem_Mp0_Read_tvalid           : in    std_ulogic;
-    siSHL_Mem_Mp0_Read_tready           : out   std_ulogic;
+    siMEM_Mp0_Read_tdata            : in    std_ulogic_vector(511 downto 0);
+    siMEM_Mp0_Read_tkeep            : in    std_ulogic_vector( 63 downto 0);
+    siMEM_Mp0_Read_tlast            : in    std_ulogic;
+    siMEM_Mp0_Read_tvalid           : in    std_ulogic;
+    siMEM_Mp0_Read_tready           : out   std_ulogic;
     ------ Stream Write Command --------
-    soSHL_Mem_Mp0_WrCmd_tdata           : out   std_ulogic_vector( 79 downto 0);
-    soSHL_Mem_Mp0_WrCmd_tvalid          : out   std_ulogic;
-    soSHL_Mem_Mp0_WrCmd_tready          : in    std_ulogic;
+    soMEM_Mp0_WrCmd_tdata           : out   std_ulogic_vector( 79 downto 0);
+    soMEM_Mp0_WrCmd_tvalid          : out   std_ulogic;
+    soMEM_Mp0_WrCmd_tready          : in    std_ulogic;
     ------ Stream Write Status ---------
-    siSHL_Mem_Mp0_WrSts_tdata           : in    std_ulogic_vector(  7 downto 0);
-    siSHL_Mem_Mp0_WrSts_tvalid          : in    std_ulogic;
-    siSHL_Mem_Mp0_WrSts_tready          : out   std_ulogic;
+    siMEM_Mp0_WrSts_tdata           : in    std_ulogic_vector(  7 downto 0);
+    siMEM_Mp0_WrSts_tvalid          : in    std_ulogic;
+    siMEM_Mp0_WrSts_tready          : out   std_ulogic;
     ------ Stream Data Output Channel --
-    soSHL_Mem_Mp0_Write_tdata           : out   std_ulogic_vector(511 downto 0);
-    soSHL_Mem_Mp0_Write_tkeep           : out   std_ulogic_vector( 63 downto 0);
-    soSHL_Mem_Mp0_Write_tlast           : out   std_ulogic;
-    soSHL_Mem_Mp0_Write_tvalid          : out   std_ulogic;
-    soSHL_Mem_Mp0_Write_tready          : in    std_ulogic; 
+    soMEM_Mp0_Write_tdata           : out   std_ulogic_vector(511 downto 0);
+    soMEM_Mp0_Write_tkeep           : out   std_ulogic_vector( 63 downto 0);
+    soMEM_Mp0_Write_tlast           : out   std_ulogic;
+    soMEM_Mp0_Write_tvalid          : out   std_ulogic;
+    soMEM_Mp0_Write_tready          : in    std_ulogic; 
     
     --------------------------------------------------------
     -- SHELL / Mem / Mp1 Interface
     --------------------------------------------------------
-    ---- Memory Port #1 / S2MM-AXIS ------------------   
-    ------ Stream Read Command ---------
-    soSHL_Mem_Mp1_RdCmd_tdata           : out   std_ulogic_vector( 79 downto 0);
-    soSHL_Mem_Mp1_RdCmd_tvalid          : out   std_ulogic;
-    soSHL_Mem_Mp1_RdCmd_tready          : in    std_ulogic;
-    ------ Stream Read Status ----------
-    siSHL_Mem_Mp1_RdSts_tdata           : in    std_ulogic_vector(  7 downto 0);
-    siSHL_Mem_Mp1_RdSts_tvalid          : in    std_ulogic;
-    siSHL_Mem_Mp1_RdSts_tready          : out   std_ulogic;
-    ------ Stream Data Input Channel ---
-    siSHL_Mem_Mp1_Read_tdata            : in    std_ulogic_vector(511 downto 0);
-    siSHL_Mem_Mp1_Read_tkeep            : in    std_ulogic_vector( 63 downto 0);
-    siSHL_Mem_Mp1_Read_tlast            : in    std_ulogic;
-    siSHL_Mem_Mp1_Read_tvalid           : in    std_ulogic;
-    siSHL_Mem_Mp1_Read_tready           : out   std_ulogic;
-    ------ Stream Write Command --------
-    soSHL_Mem_Mp1_WrCmd_tdata           : out   std_ulogic_vector( 79 downto 0);
-    soSHL_Mem_Mp1_WrCmd_tvalid          : out   std_ulogic;
-    soSHL_Mem_Mp1_WrCmd_tready          : in    std_ulogic;
-    ------ Stream Write Status ---------
-    siSHL_Mem_Mp1_WrSts_tvalid          : in    std_ulogic;
-    siSHL_Mem_Mp1_WrSts_tdata           : in    std_ulogic_vector(  7 downto 0);
-    siSHL_Mem_Mp1_WrSts_tready          : out   std_ulogic;
-    ------ Stream Data Output Channel --
-    soSHL_Mem_Mp1_Write_tdata           : out   std_ulogic_vector(511 downto 0);
-    soSHL_Mem_Mp1_Write_tkeep           : out   std_ulogic_vector( 63 downto 0);
-    soSHL_Mem_Mp1_Write_tlast           : out   std_ulogic;
-    soSHL_Mem_Mp1_Write_tvalid          : out   std_ulogic;
-    soSHL_Mem_Mp1_Write_tready          : in    std_ulogic; 
-    
+    moMEM_Mp1_AWID                  : out   std_ulogic_vector(3 downto 0);
+    moMEM_Mp1_AWADDR                : out   std_ulogic_vector(32 downto 0);
+    moMEM_Mp1_AWLEN                 : out   std_ulogic_vector(7 downto 0);
+    moMEM_Mp1_AWSIZE                : out   std_ulogic_vector(3 downto 0);
+    moMEM_Mp1_AWBURST               : out   std_ulogic_vector(1 downto 0);
+    moMEM_Mp1_AWVALID               : out   std_ulogic;
+    moMEM_Mp1_AWREADY               : in    std_ulogic;
+    moMEM_Mp1_WDATA                 : out   std_ulogic_vector(511 downto 0);
+    moMEM_Mp1_WSTRB                 : out   std_ulogic_vector(63 downto 0);
+    moMEM_Mp1_WLAST                 : out   std_ulogic;
+    moMEM_Mp1_WVALID                : out   std_ulogic;
+    moMEM_Mp1_WREADY                : in    std_ulogic;
+    moMEM_Mp1_BID                   : in    std_ulogic_vector(3 downto 0);
+    moMEM_Mp1_BRESP                 : in    std_ulogic_vector(1 downto 0);
+    moMEM_Mp1_BVALID                : in    std_ulogic;
+    moMEM_Mp1_BREADY                : out   std_ulogic;
+    moMEM_Mp1_ARID                  : out   std_ulogic_vector(3 downto 0);
+    moMEM_Mp1_ARADDR                : out   std_ulogic_vector(32 downto 0);
+    moMEM_Mp1_ARLEN                 : out   std_ulogic_vector(7 downto 0);
+    moMEM_Mp1_ARSIZE                : out   std_ulogic_vector(3 downto 0);
+    moMEM_Mp1_ARBURST               : out   std_ulogic_vector(1 downto 0);
+    moMEM_Mp1_ARVALID               : out   std_ulogic;
+    moMEM_Mp1_ARREADY               : in    std_ulogic;
+    moMEM_Mp1_RID                   : in    std_ulogic_vector(3 downto 0);
+    moMEM_Mp1_RDATA                 : in    std_ulogic_vector(511 downto 0);
+    moMEM_Mp1_RRESP                 : in    std_ulogic_vector(1 downto 0);
+    moMEM_Mp1_RLAST                 : in    std_ulogic;
+    moMEM_Mp1_RVALID                : in    std_ulogic;
+    moMEM_Mp1_RREADY                : out   std_ulogic;
+
     --------------------------------------------------------
     -- SHELL / Mmio / AppFlash Interface
     --------------------------------------------------------
@@ -567,8 +567,8 @@ begin
   --#                                                                              #
   --################################################################################
 
-  sReadTlastAsVector(0)     <= siSHL_Mem_Mp0_Read_tlast;
-  soSHL_Mem_Mp0_Write_tlast <= sWriteTlastAsVector(0);
+  sReadTlastAsVector(0)     <= siMEM_Mp0_Read_tlast;
+  soMEM_Mp0_Write_tlast <= sWriteTlastAsVector(0);
   --sResetAsVector(0) <= piSHL_156_25Rst;
   --sResetAsVector(0) <= piSHL_ROL_EMIF_2B_Reg(0);
   sResetAsVector(0) <= piMMIO_Ly7_Rst;
@@ -588,35 +588,44 @@ begin
             --poDebug_V                  => poSHL_Mmio_RdReg,
             poDebug_V                  => sMemTestDebugOut,
 
-            soMemRdCmdP0_TDATA         => soSHL_Mem_Mp0_RdCmd_tdata,
-            soMemRdCmdP0_TVALID        => soSHL_Mem_Mp0_RdCmd_tvalid,
-            soMemRdCmdP0_TREADY        => soSHL_Mem_Mp0_RdCmd_tready,
+            soMemRdCmdP0_TDATA         => soMEM_Mp0_RdCmd_tdata,
+            soMemRdCmdP0_TVALID        => soMEM_Mp0_RdCmd_tvalid,
+            soMemRdCmdP0_TREADY        => soMEM_Mp0_RdCmd_tready,
 
-            siMemRdStsP0_TDATA         => siSHL_Mem_Mp0_RdSts_tdata,
-            siMemRdStsP0_TVALID        => siSHL_Mem_Mp0_RdSts_tvalid,
-            siMemRdStsP0_TREADY        => siSHL_Mem_Mp0_RdSts_tready,
+            siMemRdStsP0_TDATA         => siMEM_Mp0_RdSts_tdata,
+            siMemRdStsP0_TVALID        => siMEM_Mp0_RdSts_tvalid,
+            siMemRdStsP0_TREADY        => siMEM_Mp0_RdSts_tready,
 
-            siMemReadP0_TDATA          => siSHL_Mem_Mp0_Read_tdata ,
-            siMemReadP0_TVALID         => siSHL_Mem_Mp0_Read_tvalid,
-            siMemReadP0_TREADY         => siSHL_Mem_Mp0_Read_tready,
-            siMemReadP0_TKEEP          => siSHL_Mem_Mp0_Read_tkeep,
+            siMemReadP0_TDATA          => siMEM_Mp0_Read_tdata ,
+            siMemReadP0_TVALID         => siMEM_Mp0_Read_tvalid,
+            siMemReadP0_TREADY         => siMEM_Mp0_Read_tready,
+            siMemReadP0_TKEEP          => siMEM_Mp0_Read_tkeep,
             siMemReadP0_TLAST          => sReadTlastAsVector,
 
-            soMemWrCmdP0_TDATA         => soSHL_Mem_Mp0_WrCmd_tdata ,
-            soMemWrCmdP0_TVALID        => soSHL_Mem_Mp0_WrCmd_tvalid,
-            soMemWrCmdP0_TREADY        => soSHL_Mem_Mp0_WrCmd_tready,
+            soMemWrCmdP0_TDATA         => soMEM_Mp0_WrCmd_tdata ,
+            soMemWrCmdP0_TVALID        => soMEM_Mp0_WrCmd_tvalid,
+            soMemWrCmdP0_TREADY        => soMEM_Mp0_WrCmd_tready,
 
-            siMemWrStsP0_TDATA         => siSHL_Mem_Mp0_WrSts_tdata ,
-            siMemWrStsP0_TVALID        => siSHL_Mem_Mp0_WrSts_tvalid,
-            siMemWrStsP0_TREADY        => siSHL_Mem_Mp0_WrSts_tready,
+            siMemWrStsP0_TDATA         => siMEM_Mp0_WrSts_tdata ,
+            siMemWrStsP0_TVALID        => siMEM_Mp0_WrSts_tvalid,
+            siMemWrStsP0_TREADY        => siMEM_Mp0_WrSts_tready,
 
-            soMemWriteP0_TDATA         => soSHL_Mem_Mp0_Write_tdata ,
-            soMemWriteP0_TVALID        => soSHL_Mem_Mp0_Write_tvalid,
-            soMemWriteP0_TREADY        => soSHL_Mem_Mp0_Write_tready,
-            soMemWriteP0_TKEEP         => soSHL_Mem_Mp0_Write_tkeep ,
+            soMemWriteP0_TDATA         => soMEM_Mp0_Write_tdata ,
+            soMemWriteP0_TVALID        => soMEM_Mp0_Write_tvalid,
+            soMemWriteP0_TREADY        => soMEM_Mp0_Write_tready,
+            soMemWriteP0_TKEEP         => soMEM_Mp0_Write_tkeep ,
             soMemWriteP0_TLAST         => sWriteTlastAsVector
           );
 
+  --################################################################################
+  --  2nd Memory Port dummy connections
+  --################################################################################
+
+  moMEM_Mp1_AWVALID <= '0';
+  moMEM_Mp1_WVALID  <= '0';
+  moMEM_Mp1_BREADY  <= '0';
+  moMEM_Mp1_ARVALID <= '0';
+  moMEM_Mp1_RREADY  <= '0';
 
 end architecture Flash;
 

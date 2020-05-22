@@ -70,8 +70,12 @@ pr2: ensureNotMonolithic ShellSrc Role2 | xpr ## Builds Shell (if necessary) and
 pr_full: ensureNotMonolithic ShellSrc Role Role2 | xpr ## Builds Shell (if necessary) and both Roles using PR flow
 	$(MAKE) -C ./TOP/tcl/ full_src_pr_all
 
-#pr_full_mpi: ensureNotMonolithic ShellSrcMPI RoleMPItype RoleMPI2type | xpr
-#	export usedRole=$(USED_MPI_ROLE); export usedRole2=$(USED_MPI_ROLE_2); $(MAKE) -C ./TOP/tcl/ full_src_pr_all_mpi
+
+pr_debug: ensureNotMonolithic ensureDebugNets ShellSrc Role  | xpr  ## Builds Shell (if necessary) and first Role only using PR flow including debug probes for the Shell
+	$(MAKE) -C ./TOP/tcl/ full_src_pr_debug
+
+pr_full_debug: ensureNotMonolithic ensureDebugNets ShellSrc Role Role2 | xpr ## Builds Shell (if necessary) and both Roles using PR flow including debug probes for the Shell
+	$(MAKE) -C ./TOP/tcl/ full_src_pr_all_debug
 
 #pr_incr: ensureNotMonolithic ShellSrc Role  | xpr
 #	export usedRole=$(USED_ROLE); export usedRole2=$(USED_ROLE_2); $(MAKE) -C ./TOP/tcl/ full_src_pr_incr
@@ -88,12 +92,6 @@ pr_only: ensureNotMonolithic Role  | xpr ## Building partial bitifle for Role 1 
 
 pr2_only: ensureNotMonolithic Role2 | xpr ## Building partial bitifle for Role 2 (if Shell.dcp is present)
 	$(MAKE) -C ./TOP/tcl/ full_src_pr_2_only
-
-#pr_only_mpi: ensureNotMonolithic RoleMPItype | xpr
-#	export usedRole=$(USED_MPI_ROLE); export usedRole2=$(USED_MPI_ROLE_2); $(MAKE) -C ./TOP/tcl/ full_src_pr_only_mpi
-#
-#pr2_only_mpi: ensureNotMonolithic RoleMPI2type | xpr
-#	export usedRole=$(USED_MPI_ROLE); export usedRole2=$(USED_MPI_ROLE_2); $(MAKE) -C ./TOP/tcl/ full_src_pr_2_only_mpi
 
 #pr_incr_only: ensureNotMonolithic Role  | xpr
 #	export usedRole=$(USED_ROLE); export usedRole2=$(USED_ROLE_2); $(MAKE) -C ./TOP/tcl/ full_src_pr_incr_only

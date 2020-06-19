@@ -256,7 +256,7 @@ architecture structural of topFMKU60 is
   signal smROL_SHL_Mem_Mp1_AWID             : std_ulogic_vector(3 downto 0);
   signal smROL_SHL_Mem_Mp1_AWADDR           : std_ulogic_vector(32 downto 0);
   signal smROL_SHL_Mem_Mp1_AWLEN            : std_ulogic_vector(7 downto 0);
-  signal smROL_SHL_Mem_Mp1_AWSIZE           : std_ulogic_vector(3 downto 0);
+  signal smROL_SHL_Mem_Mp1_AWSIZE           : std_ulogic_vector(2 downto 0);
   signal smROL_SHL_Mem_Mp1_AWBURST          : std_ulogic_vector(1 downto 0);
   signal smROL_SHL_Mem_Mp1_AWVALID          : std_ulogic;
   signal smROL_SHL_Mem_Mp1_AWREADY          : std_ulogic;
@@ -272,7 +272,7 @@ architecture structural of topFMKU60 is
   signal smROL_SHL_Mem_Mp1_ARID             : std_ulogic_vector(3 downto 0);
   signal smROL_SHL_Mem_Mp1_ARADDR           : std_ulogic_vector(32 downto 0);
   signal smROL_SHL_Mem_Mp1_ARLEN            : std_ulogic_vector(7 downto 0);
-  signal smROL_SHL_Mem_Mp1_ARSIZE           : std_ulogic_vector(3 downto 0);
+  signal smROL_SHL_Mem_Mp1_ARSIZE           : std_ulogic_vector(2 downto 0);
   signal smROL_SHL_Mem_Mp1_ARBURST          : std_ulogic_vector(1 downto 0);
   signal smROL_SHL_Mem_Mp1_ARVALID          : std_ulogic;
   signal smROL_SHL_Mem_Mp1_ARREADY          : std_ulogic;
@@ -513,7 +513,7 @@ architecture structural of topFMKU60 is
       miROL_Mem_Mp1_AWID                : in    std_ulogic_vector(3 downto 0);
       miROL_Mem_Mp1_AWADDR              : in    std_ulogic_vector(32 downto 0);
       miROL_Mem_Mp1_AWLEN               : in    std_ulogic_vector(7 downto 0);
-      miROL_Mem_Mp1_AWSIZE              : in    std_ulogic_vector(3 downto 0);
+      miROL_Mem_Mp1_AWSIZE              : in    std_ulogic_vector(2 downto 0);
       miROL_Mem_Mp1_AWBURST             : in    std_ulogic_vector(1 downto 0);
       miROL_Mem_Mp1_AWVALID             : in    std_ulogic;
       miROL_Mem_Mp1_AWREADY             : out   std_ulogic;
@@ -529,7 +529,7 @@ architecture structural of topFMKU60 is
       miROL_Mem_Mp1_ARID                : in    std_ulogic_vector(3 downto 0);
       miROL_Mem_Mp1_ARADDR              : in    std_ulogic_vector(32 downto 0);
       miROL_Mem_Mp1_ARLEN               : in    std_ulogic_vector(7 downto 0);
-      miROL_Mem_Mp1_ARSIZE              : in    std_ulogic_vector(3 downto 0);
+      miROL_Mem_Mp1_ARSIZE              : in    std_ulogic_vector(2 downto 0);
       miROL_Mem_Mp1_ARBURST             : in    std_ulogic_vector(1 downto 0);
       miROL_Mem_Mp1_ARVALID             : in    std_ulogic;
       miROL_Mem_Mp1_ARREADY             : out   std_ulogic;
@@ -688,7 +688,7 @@ architecture structural of topFMKU60 is
       moMEM_Mp1_AWID                  : out   std_ulogic_vector(3 downto 0);
       moMEM_Mp1_AWADDR                : out   std_ulogic_vector(32 downto 0);
       moMEM_Mp1_AWLEN                 : out   std_ulogic_vector(7 downto 0);
-      moMEM_Mp1_AWSIZE                : out   std_ulogic_vector(3 downto 0);
+      moMEM_Mp1_AWSIZE                : out   std_ulogic_vector(2 downto 0);
       moMEM_Mp1_AWBURST               : out   std_ulogic_vector(1 downto 0);
       moMEM_Mp1_AWVALID               : out   std_ulogic;
       moMEM_Mp1_AWREADY               : in    std_ulogic;
@@ -704,7 +704,7 @@ architecture structural of topFMKU60 is
       moMEM_Mp1_ARID                  : out   std_ulogic_vector(3 downto 0);
       moMEM_Mp1_ARADDR                : out   std_ulogic_vector(32 downto 0);
       moMEM_Mp1_ARLEN                 : out   std_ulogic_vector(7 downto 0);
-      moMEM_Mp1_ARSIZE                : out   std_ulogic_vector(3 downto 0);
+      moMEM_Mp1_ARSIZE                : out   std_ulogic_vector(2 downto 0);
       moMEM_Mp1_ARBURST               : out   std_ulogic_vector(1 downto 0);
       moMEM_Mp1_ARVALID               : out   std_ulogic;
       moMEM_Mp1_ARREADY               : in    std_ulogic;

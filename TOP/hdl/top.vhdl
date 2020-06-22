@@ -313,7 +313,8 @@ architecture structural of topFMKU60 is
   signal sSHL_ROL_Fmc_Rank                  : std_ulogic_vector( 31 downto 0);
   signal sSHL_ROL_Fmc_Size                  : std_ulogic_vector( 31 downto 0);
   
-  
+  signal sROL_reset_combinded               : std_ulogic;
+
   --===========================================================================
   --== COMPONENT DECLARATIONS
   --===========================================================================
@@ -715,24 +716,25 @@ architecture structural of topFMKU60 is
       moMEM_Mp1_RVALID                : in    std_ulogic;
       moMEM_Mp1_RREADY                : out   std_ulogic;
 
-      --------------------------------------------------------
-      -- SHELL / Mmio / AppFlash Interface
-      --------------------------------------------------------
-      ---- [DIAG_CTRL_1] -----------------
-      piSHL_Mmio_Mc1_MemTestCtrl          : in    std_ulogic_vector(  1 downto 0);
-      ---- [DIAG_STAT_1] -----------------
-      poSHL_Mmio_Mc1_MemTestStat          : out   std_ulogic_vector(  1 downto 0);
-      ---- [DIAG_CTRL_2] -----------------
-      piSHL_Mmio_UdpEchoCtrl              : in    std_ulogic_vector(  1 downto 0);
-      piSHL_Mmio_UdpPostDgmEn             : in    std_ulogic;
-      piSHL_Mmio_UdpCaptDgmEn             : in    std_ulogic;
-      piSHL_Mmio_TcpEchoCtrl              : in    std_ulogic_vector(  1 downto 0);
-      piSHL_Mmio_TcpPostSegEn             : in    std_ulogic;
-      piSHL_Mmio_TcpCaptSegEn             : in    std_ulogic;
+      -- leave declarations here for higher privileged Roles?
+      ----------------------------------------------------------
+      ---- SHELL / Mmio / AppFlash Interface
+      ----------------------------------------------------------
+      ------ [DIAG_CTRL_1] -----------------
+      --piSHL_Mmio_Mc1_MemTestCtrl          : in    std_ulogic_vector(  1 downto 0);
+      ------ [DIAG_STAT_1] -----------------
+      --poSHL_Mmio_Mc1_MemTestStat          : out   std_ulogic_vector(  1 downto 0);
+      ------ [DIAG_CTRL_2] -----------------
+      --piSHL_Mmio_UdpEchoCtrl              : in    std_ulogic_vector(  1 downto 0);
+      --piSHL_Mmio_UdpPostDgmEn             : in    std_ulogic;
+      --piSHL_Mmio_UdpCaptDgmEn             : in    std_ulogic;
+      --piSHL_Mmio_TcpEchoCtrl              : in    std_ulogic_vector(  1 downto 0);
+      --piSHL_Mmio_TcpPostSegEn             : in    std_ulogic;
+      --piSHL_Mmio_TcpCaptSegEn             : in    std_ulogic;
       ---- [APP_RDROL] -------------------
       poSHL_Mmio_RdReg                    : out   std_ulogic_vector( 15 downto 0);
-      --- [APP_WRROL] --------------------
-      piSHL_Mmio_WrReg                    : in    std_ulogic_vector( 15 downto 0);
+      ----- [APP_WRROL] --------------------
+      --piSHL_Mmio_WrReg                    : in    std_ulogic_vector( 15 downto 0);
 
       --------------------------------------------------------
       -- TOP : Secondary Clock (Asynchronous)
@@ -1068,6 +1070,14 @@ begin
   --==========================================================================
   --  INST: ROLE FOR FMKU60
   --==========================================================================
+
+  -- drive MMIO signals if NOT used by the ROLE
+  sROL_SHL_Mmio_Mc1_MemTestStat <= (others => '0');
+  --sROL_SHL_Mmio_RdReg <= x"CFCF";
+
+  -- security consideration: if we want to reset layer 7, the user should not be able to avoid it
+  sROL_reset_combinded <= sSHL_156_25Rst or sSHL_ROL_Mmio_Ly7Rst;
+
   ROLE : Role_Themisto
     port map (
     
@@ -1075,7 +1085,8 @@ begin
       -- SHELL / Global Input Clock and Reset Interface
       ------------------------------------------------------
       piSHL_156_25Clk                   => sSHL_156_25Clk,
-      piSHL_156_25Rst                   => sSHL_156_25Rst,
+      --piSHL_156_25Rst                   => sSHL_156_25Rst,
+      piSHL_156_25Rst                   => sROL_reset_combinded,
       -- LY7 Enable and Reset
       piMMIO_Ly7_Rst                    => sSHL_ROL_Mmio_Ly7Rst,
       piMMIO_Ly7_En                     => sSHL_ROL_Mmio_Ly7En,
@@ -1205,24 +1216,25 @@ begin
       moMEM_Mp1_RVALID              =>  smROL_SHL_Mem_Mp1_RVALID   ,
       moMEM_Mp1_RREADY              =>  smROL_SHL_Mem_Mp1_RREADY   ,
       
-      ------------------------------------------------------
-      -- SHELL / Mmio / Flash Debug Interface
-      ------------------------------------------------------
-      ---- [DIAG_CTRL_1] ---------------
-      piSHL_Mmio_Mc1_MemTestCtrl        => sSHL_ROL_Mmio_Mc1_MemTestCtrl,
-      ---- [DIAG_STAT_1] ---------------
-      poSHL_Mmio_Mc1_MemTestStat        => sROL_SHL_Mmio_Mc1_MemTestStat,
-      ---- [DIAG_CTRL_2] ---------------
-      piSHL_Mmio_UdpEchoCtrl            => sSHL_ROL_Mmio_UdpEchoCtrl,
-      piSHL_Mmio_UdpPostDgmEn           => sSHL_ROL_Mmio_UdpPostDgmEn,
-      piSHL_Mmio_UdpCaptDgmEn           => sSHL_ROL_Mmio_UdpCaptDgmEn,
-      piSHL_Mmio_TcpEchoCtrl            => sSHL_ROL_Mmio_TcpEchoCtrl,
-      piSHL_Mmio_TcpPostSegEn           => sSHL_ROL_Mmio_TcpPostSegEn,
-      piSHL_Mmio_TcpCaptSegEn           => sSHL_ROL_Mmio_TcpCaptSegEn,
+      -- leave declarations here for higher privileged Roles?
+      --------------------------------------------------------
+      ---- SHELL / Mmio / Flash Debug Interface
+      --------------------------------------------------------
+      ------ [DIAG_CTRL_1] ---------------
+      --piSHL_Mmio_Mc1_MemTestCtrl        => sSHL_ROL_Mmio_Mc1_MemTestCtrl,
+      ------ [DIAG_STAT_1] ---------------
+      --poSHL_Mmio_Mc1_MemTestStat        => sROL_SHL_Mmio_Mc1_MemTestStat,
+      ------ [DIAG_CTRL_2] ---------------
+      --piSHL_Mmio_UdpEchoCtrl            => sSHL_ROL_Mmio_UdpEchoCtrl,
+      --piSHL_Mmio_UdpPostDgmEn           => sSHL_ROL_Mmio_UdpPostDgmEn,
+      --piSHL_Mmio_UdpCaptDgmEn           => sSHL_ROL_Mmio_UdpCaptDgmEn,
+      --piSHL_Mmio_TcpEchoCtrl            => sSHL_ROL_Mmio_TcpEchoCtrl,
+      --piSHL_Mmio_TcpPostSegEn           => sSHL_ROL_Mmio_TcpPostSegEn,
+      --piSHL_Mmio_TcpCaptSegEn           => sSHL_ROL_Mmio_TcpCaptSegEn,
       ---- [APP_RDROL] -----------------
       poSHL_Mmio_RdReg                  => sROL_SHL_Mmio_RdReg,
-      --- [APP_WRROL] ------------------
-      piSHL_Mmio_WrReg                  => sSHL_ROL_Mmio_WrReg,
+      ----- [APP_WRROL] ------------------
+      --piSHL_Mmio_WrReg                  => sSHL_ROL_Mmio_WrReg,
 
       ------------------------------------------------------
       ---- TOP : Secondary Clock (Asynchronous)

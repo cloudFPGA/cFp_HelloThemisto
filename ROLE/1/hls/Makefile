@@ -12,7 +12,8 @@
 
 .PHONY: all clean mem_test_flash triangle_app
 
-all: mem_test_flash triangle_app
+#currently exluded: mem_test_flash
+all: triangle_app
 
 
 *:

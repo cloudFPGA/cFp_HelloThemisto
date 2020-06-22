@@ -309,7 +309,7 @@ begin
   --poSHL_Mmio_RdReg <= sMemTestDebugOut when (unsigned(piSHL_Mmio_WrReg) /= 0) else 
   -- x"BEEF"; 
   -- to be use as ROLE VERSION IDENTIFICATION --
-  poSHL_Mmio_RdReg <= x"1DEA";;
+  poSHL_Mmio_RdReg <= x"1DEA";
   
 
   --################################################################################

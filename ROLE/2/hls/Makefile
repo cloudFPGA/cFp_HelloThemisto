@@ -10,10 +10,10 @@
 # *
 # ******************************************************************************
 
-.PHONY: all clean mem_test_flash triangle_app
+.PHONY: all clean mem_test_flash upper_lower_app
 
 #currently exluded: mem_test_flash
-all: triangle_app
+all: upper_lower_app
 
 
 *:

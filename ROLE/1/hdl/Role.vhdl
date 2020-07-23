@@ -447,8 +447,7 @@ begin
 
   --end generate;
 
-  --DEBUGING:
-  --poROL_Nrc_Tcp_Rx_ports <= (others => '0');
+
 
   --################################################################################
   --  1st Memory Port dummy connections

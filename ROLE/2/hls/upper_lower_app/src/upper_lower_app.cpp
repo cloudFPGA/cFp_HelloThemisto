@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2016 -- 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
+
 //  *
 //  *                       cloudFPGA
 //  *     Copyright IBM Research, All Rights Reserved
@@ -12,15 +29,9 @@
 #include "upper_lower_app.hpp"
 
 
-stream<NetworkWord>       sRxpToTxp_Data("sRxpToTxP_Data");
-stream<NetworkMetaStream> sRxtoTx_Meta("sRxtoTx_Meta");
-
-PacketFsmType enqueueFSM = WAIT_FOR_META;
-PacketFsmType dequeueFSM = WAIT_FOR_STREAM_PAIR;
-
-
 uint8_t upper(uint8_t a)
 {
+#pragma HLS inline
   if( (a >= 0x61) && (a <= 0x7a) )
   {
     a -= 0x20;
@@ -32,6 +43,7 @@ uint8_t upper(uint8_t a)
 
 uint8_t lower(uint8_t a)
 {
+#pragma HLS inline
   if( (a >= 0x41) && (a <= 0x5a) )
   {
     a += 0x20;
@@ -41,6 +53,7 @@ uint8_t lower(uint8_t a)
 
 uint8_t invert_case(uint8_t a)
 {
+#pragma HLS inline
   uint8_t ret = 0x0;
   if( (a >= 0x41) && (a <= 0x5a) )
   {
@@ -58,6 +71,7 @@ uint8_t invert_case(uint8_t a)
 
 uint64_t invert_word(uint64_t input)
 {
+#pragma HLS inline
   uint64_t output = 0x0;
   for(uint8_t i = 0; i < 8; i++)
   {
@@ -68,66 +82,62 @@ uint64_t invert_word(uint64_t input)
 }
 
 
-
-/*****************************************************************************
- * @brief   Main process of the UDP/Tcp Triangle Application
- * @ingroup udp_app_flash
- *
- * @return Nothing.
- *****************************************************************************/
-void upper_lower_app(
-
+void pPortAndDestionation(
     ap_uint<32>             *pi_rank,
     ap_uint<32>             *pi_size,
-    //------------------------------------------------------
-    //-- SHELL / This / Udp/TCP Interfaces
-    //------------------------------------------------------
-    stream<NetworkWord>         &siSHL_This_Data,
-    stream<NetworkWord>         &soTHIS_Shl_Data,
-    stream<NetworkMetaStream>   &siNrc_meta,
-    stream<NetworkMetaStream>   &soNrc_meta,
+    stream<NodeId>          &sDstNode_sig,
     ap_uint<32>                 *po_rx_ports
     )
 {
-
-  //-- DIRECTIVES FOR THE BLOCK ---------------------------------------------
- //#pragma HLS INTERFACE ap_ctrl_none port=return
-
-  //#pragma HLS INTERFACE ap_stable     port=piSHL_This_MmioEchoCtrl
-
-#pragma HLS INTERFACE axis register both port=siSHL_This_Data
-#pragma HLS INTERFACE axis register both port=soTHIS_Shl_Data
-
-#pragma HLS INTERFACE axis register both port=siNrc_meta
-#pragma HLS INTERFACE axis register both port=soNrc_meta
-
-#pragma HLS INTERFACE ap_ovld register port=po_rx_ports name=poROL_NRC_Rx_ports
-#pragma HLS INTERFACE ap_stable register port=pi_rank name=piFMC_ROL_rank
-#pragma HLS INTERFACE ap_stable register port=pi_size name=piFMC_ROL_size
-
-
   //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
-#pragma HLS DATAFLOW interval=1
-//#pragma HLS STREAM variable=sRxpToTxp_Data depth=1500 
-//#pragma HLS STREAM variable=sRxtoTx_Meta depth=1500 
+#pragma HLS inline off
+//#pragma HLS pipeline II=1 //not necessary
+  //-- STATIC VARIABLES (with RESET) ------------------------------------------
+  static PortFsmType port_fsm = FSM_WRITE_NEW_DATA;
+#pragma HLS reset variable=port_fsm
+
+
+  switch(port_fsm)
+  {
+    default:
+    case FSM_WRITE_NEW_DATA:
+        //Triangle app needs to be reset to process new rank
+        if(!sDstNode_sig.full())
+        {
+          NodeId dst_rank = (*pi_rank + 1) % *pi_size;
+          printf("rank: %d; size: %d; \n", (int) *pi_rank, (int) *pi_size);
+          sDstNode_sig.write(dst_rank);
+          port_fsm = FSM_DONE;
+        }
+        break;
+    case FSM_DONE:
+        *po_rx_ports = 0x1; //currently work only with default ports...
+        break;
+  }
+}
+
+
+void pEnq(
+    stream<NetworkMetaStream>   &siNrc_meta,
+    stream<NetworkWord>         &siSHL_This_Data,
+    stream<NetworkMetaStream>   &sRxtoTx_Meta,
+    stream<NetworkWord>         &sRxpToTxp_Data
+    )
+{
+  //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
+#pragma HLS inline off
+#pragma HLS pipeline II=1
+  //-- STATIC VARIABLES (with RESET) ------------------------------------------
+  static PacketFsmType enqueueFSM = WAIT_FOR_META;
 #pragma HLS reset variable=enqueueFSM
-#pragma HLS reset variable=dequeueFSM
-
-
-
-
-  *po_rx_ports = 0x1; //currently work only with default ports...
-
   //-- LOCAL VARIABLES ------------------------------------------------------
   NetworkWord udpWord;
-  NetworkWord  udpWordTx;
-  NetworkWord newWord;
   NetworkMetaStream  meta_tmp = NetworkMetaStream();
-  NetworkMeta  meta_in = NetworkMeta();
-
-
+  NetworkWord newWord;
+  
   switch(enqueueFSM)
   {
+    default:
     case WAIT_FOR_META: 
       if ( !siNrc_meta.empty() && !sRxtoTx_Meta.full() )
       {
@@ -152,40 +162,84 @@ void upper_lower_app(
       }
       break;
   }
+}
 
+
+void pDeq(
+    stream<NodeId>          &sDstNode_sig,
+    stream<NetworkMetaStream>   &sRxtoTx_Meta,
+    stream<NetworkWord>         &sRxpToTxp_Data,
+    stream<NetworkMetaStream>   &soNrc_meta,
+    stream<NetworkWord>         &soTHIS_Shl_Data
+    )
+{
+  //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
+#pragma HLS inline off
+#pragma HLS pipeline II=1
+  //-- STATIC VARIABLES (with RESET) ------------------------------------------
+  static PacketFsmType dequeueFSM = WAIT_FOR_META;
+#pragma HLS reset variable=dequeueFSM
+  //-- STATIC DATAFLOW VARIABLES ------------------------------------------
+  static NetworkMeta meta_out;
+  static NodeId dst_rank;
+  //-- LOCAL VARIABLES ------------------------------------------------------
+  NetworkWord  udpWordTx;
+  //NetworkMeta  meta_in = NetworkMeta();
 
   switch(dequeueFSM)
   {
-    case WAIT_FOR_STREAM_PAIR:
-      //-- Forward incoming chunk to SHELL
-      if ( !sRxpToTxp_Data.empty() && !sRxtoTx_Meta.empty() 
-          && !soTHIS_Shl_Data.full() &&  !soNrc_meta.full() ) 
+    default:
+    case WAIT_FOR_META:
+      if(!sDstNode_sig.empty())
       {
-        udpWordTx = sRxpToTxp_Data.read();
-        soTHIS_Shl_Data.write(udpWordTx);
-
-        meta_in = sRxtoTx_Meta.read().tdata;
-        NetworkMetaStream meta_out_stream = NetworkMetaStream();
-        meta_out_stream.tlast = 1;
-        meta_out_stream.tkeep = 0xFF; //just to be sure
-
-        //printf("rank: %d; size: %d; \n", (int) *pi_rank, (int) *pi_size);
-        meta_out_stream.tdata.dst_rank = (*pi_rank + 1) % *pi_size;
-        //printf("meat_out.dst_rank: %d\n", (int) meta_out_stream.tdata.dst_rank);
-
-        meta_out_stream.tdata.dst_port = DEFAULT_TX_PORT;
-        meta_out_stream.tdata.src_rank = (NodeId) *pi_rank;
-        meta_out_stream.tdata.src_port = DEFAULT_RX_PORT;
-        soNrc_meta.write(meta_out_stream);
-
-        if(udpWordTx.tlast != 1)
-        {
-          dequeueFSM = PROCESSING_PACKET;
-        }
+        dst_rank = sDstNode_sig.read();
+        dequeueFSM = WAIT_FOR_STREAM_PAIR;
+        //Triangle app needs to be reset to process new rank
       }
       break;
+    case WAIT_FOR_STREAM_PAIR:
+      //-- Forward incoming chunk to SHELL
+      if ( //!sRxpToTxp_Data.empty() && 
+          !sRxtoTx_Meta.empty() 
+          //&& !soTHIS_Shl_Data.full() 
+          //&& !soNrc_meta.full() 
+        )
+      {
+        //udpWordTx = sRxpToTxp_Data.read();
+        //soTHIS_Shl_Data.write(udpWordTx);
 
-    case PROCESSING_PACKET: 
+        NetworkMeta meta_in = sRxtoTx_Meta.read().tdata;
+        meta_out = NetworkMeta();
+        //meta_out_stream.tlast = 1;
+        //meta_out_stream.tkeep = 0xFF; //just to be sure!
+
+        //meta_out.dst_rank = (*pi_rank + 1) % *pi_size;
+        meta_out.dst_rank = dst_rank;
+        //printf("meat_out.dst_rank: %d\n", (int) meta_out_stream.tdata.dst_rank);
+        meta_out.dst_port = DEFAULT_TX_PORT;
+        //meta_out.src_rank = (NodeId) *pi_rank;
+        meta_out.src_rank = 0; //will be ignored, it is always this FPGA...
+        meta_out.src_port = DEFAULT_RX_PORT;
+        meta_out.len = meta_in.len;
+
+       soNrc_meta.write(NetworkMeta(meta_out));
+
+        //if(udpWordTx.tlast != 1)
+        //{
+          dequeueFSM = PROCESSING_PACKET;
+        //}
+        //dequeueFSM = WRITE_META;
+      }
+      break;
+    //case WRITE_META:
+    //  if(!soNrc_meta.full())
+    //  {
+    //   soNrc_meta.write(NetworkMeta(meta_out));
+    //   dequeueFSM = PROCESSING_PACKET;
+    //  }
+    //  break;
+
+    case PROCESSING_PACKET:
       if( !sRxpToTxp_Data.empty() && !soTHIS_Shl_Data.full())
       {
         udpWordTx = sRxpToTxp_Data.read();
@@ -199,6 +253,70 @@ void upper_lower_app(
       }
       break;
   }
+
+}
+
+
+
+/*****************************************************************************
+ * @brief   Main process of the UDP/TCP Triangle Application. 
+ *          This HLS IP receives a packet, invert the case of ASCII characters,
+ *          and forwards it to the next node in the cluster. 
+ *          The last forwards it to 0.
+ * @ingroup ROLE
+ *
+ * @return Nothing.
+ *****************************************************************************/
+void upper_lower_app(
+    ap_uint<32>             *pi_rank,
+    ap_uint<32>             *pi_size,
+    //------------------------------------------------------
+    //-- SHELL / This / UDP/TCP Interfaces
+    //------------------------------------------------------
+    stream<NetworkWord>         &siSHL_This_Data,
+    stream<NetworkWord>         &soTHIS_Shl_Data,
+    stream<NetworkMetaStream>   &siNrc_meta,
+    stream<NetworkMetaStream>   &soNrc_meta,
+    ap_uint<32>                 *po_rx_ports
+    )
+{
+
+  //-- DIRECTIVES FOR THE BLOCK ---------------------------------------------
+#pragma HLS INTERFACE ap_ctrl_none port=return
+
+#pragma HLS INTERFACE axis register both port=siSHL_This_Data
+#pragma HLS INTERFACE axis register both port=soTHIS_Shl_Data
+
+#pragma HLS INTERFACE axis register both port=siNrc_meta
+#pragma HLS INTERFACE axis register both port=soNrc_meta
+
+#pragma HLS INTERFACE ap_ovld register port=po_rx_ports name=poROL_NRC_Rx_ports
+#pragma HLS INTERFACE ap_vld register port=pi_rank name=piFMC_ROL_rank
+#pragma HLS INTERFACE ap_vld register port=pi_size name=piFMC_ROL_size
+
+
+  //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
+#pragma HLS DATAFLOW
+
+  //-- STATIC VARIABLES (with RESET) ------------------------------------------
+
+  //-- STATIC DATAFLOW VARIABLES ------------------------------------------
+  static stream<NetworkWord>       sRxpToTxp_Data("sRxpToTxP_Data");
+  static stream<NetworkMetaStream> sRxtoTx_Meta("sRxtoTx_Meta");
+  static stream<NodeId>            sDstNode_sig("sDstNode_sig");
+
+#pragma HLS STREAM variable=sRxpToTxp_Data   depth=252
+#pragma HLS STREAM variable=sRxtoTx_Meta     depth=32
+#pragma HLS STREAM variable=sDstNode_sig     depth=1
+
+
+  //-- LOCAL VARIABLES ------------------------------------------------------
+
+  pPortAndDestionation(pi_rank, pi_size, sDstNode_sig, po_rx_ports);
+
+  pEnq(siNrc_meta, siSHL_This_Data, sRxtoTx_Meta, sRxpToTxp_Data);
+
+  pDeq(sDstNode_sig, sRxtoTx_Meta, sRxpToTxp_Data, soNrc_meta, soTHIS_Shl_Data);
 
 }
 

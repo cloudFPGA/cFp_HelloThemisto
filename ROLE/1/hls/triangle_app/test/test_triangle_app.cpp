@@ -288,10 +288,10 @@ int main() {
       {
         i++;
         NetworkMetaStream tmp_meta = soUdp_meta.read();
-        printf("NRC received NRCmeta stream from rank %d to rank %d.\n", (int) tmp_meta.tdata.src_rank, (int) tmp_meta.tdata.dst_rank);
-        assert(tmp_meta.tdata.src_rank == node_rank);
+        printf("NRC received NRCmeta stream to rank %d.\n", (int) tmp_meta.tdata.dst_rank);
+        //assert(tmp_meta.tdata.src_rank == node_rank); //is not relevant
         //ensure forwarding behavior
-        assert(tmp_meta.tdata.dst_rank == ((tmp_meta.tdata.src_rank + 1) % size));
+        assert(tmp_meta.tdata.dst_rank == ((node_rank + 1) % size));
       }
       assert(i == 2);
     } else {

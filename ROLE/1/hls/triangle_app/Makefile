@@ -33,6 +33,7 @@ ${ipName}_prj/solution1/impl/ip: $(DEPS)
 	@#rm -rf $@
 	rm -rf ${ipName}_prj
 	export hlsSim=0; export hlsCoSim=0; vivado_hls -f run_hls.tcl
+	@cat ${ipName}_prj/solution1/syn/report/${ipName}_csynth.rpt
 	@#touch ${ipName}_prj
 	@touch $@
 	@touch ../../.ip_guard

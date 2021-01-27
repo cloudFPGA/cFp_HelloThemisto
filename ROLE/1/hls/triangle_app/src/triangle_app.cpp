@@ -37,7 +37,7 @@ void pPortAndDestionation(
     )
 {
   //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
-#pragma HLS inline off
+#pragma HLS INLINE off
 //#pragma HLS pipeline II=1 //not necessary
   //-- STATIC VARIABLES (with RESET) ------------------------------------------
   static PortFsmType port_fsm = FSM_WRITE_NEW_DATA;
@@ -66,39 +66,38 @@ void pPortAndDestionation(
 
 void pEnq(
     stream<NetworkMetaStream>   &siNrc_meta,
-    stream<NetworkWord>         &siSHL_This_Data,
+    stream<NetworkWord>         &siNrc_data,
     stream<NetworkMetaStream>   &sRxtoTx_Meta,
     stream<NetworkWord>         &sRxpToTxp_Data
     )
 {
   //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
-#pragma HLS inline off
+#pragma HLS INLINE off
 #pragma HLS pipeline II=1
   //-- STATIC VARIABLES (with RESET) ------------------------------------------
   static PacketFsmType enqueueFSM = WAIT_FOR_META;
 #pragma HLS reset variable=enqueueFSM
   //-- LOCAL VARIABLES ------------------------------------------------------
-  NetworkWord udpWord;
-  NetworkMetaStream  meta_tmp = NetworkMetaStream();
-  
+  NetworkWord udpWord = NetworkWord();
+  NetworkMetaStream meta_tmp = NetworkMetaStream();
+
   switch(enqueueFSM)
   {
     default:
-    case WAIT_FOR_META: 
+    case WAIT_FOR_META:
       if ( !siNrc_meta.empty() && !sRxtoTx_Meta.full() )
       {
         meta_tmp = siNrc_meta.read();
-        meta_tmp.tlast = 1; //just to be sure...
+        //meta_tmp.tlast = 1; //just to be sure...
         sRxtoTx_Meta.write(meta_tmp);
         enqueueFSM = PROCESSING_PACKET;
       }
       break;
 
     case PROCESSING_PACKET:
-      if ( !siSHL_This_Data.empty() && !sRxpToTxp_Data.full() )
+      if ( !siNrc_data.empty() && !sRxpToTxp_Data.full() )
       {
-        //-- Read incoming data chunk
-        udpWord = siSHL_This_Data.read();
+        udpWord = siNrc_data.read();
         sRxpToTxp_Data.write(udpWord);
         if(udpWord.tlast == 1)
         {
@@ -115,21 +114,20 @@ void pDeq(
     stream<NetworkMetaStream>   &sRxtoTx_Meta,
     stream<NetworkWord>         &sRxpToTxp_Data,
     stream<NetworkMetaStream>   &soNrc_meta,
-    stream<NetworkWord>         &soTHIS_Shl_Data
+    stream<NetworkWord>         &soNrc_data
     )
 {
   //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
-#pragma HLS inline off
+#pragma HLS INLINE off
 #pragma HLS pipeline II=1
   //-- STATIC VARIABLES (with RESET) ------------------------------------------
   static PacketFsmType dequeueFSM = WAIT_FOR_META;
 #pragma HLS reset variable=dequeueFSM
   //-- STATIC DATAFLOW VARIABLES ------------------------------------------
-  static NetworkMeta meta_out;
+  //static NetworkMeta meta_out;
   static NodeId dst_rank;
   //-- LOCAL VARIABLES ------------------------------------------------------
-  NetworkWord  udpWordTx;
-  //NetworkMeta  meta_in = NetworkMeta();
+  NetworkWord udpWordTx = NetworkWord();
 
   switch(dequeueFSM)
   {
@@ -138,23 +136,23 @@ void pDeq(
       if(!sDstNode_sig.empty())
       {
         dst_rank = sDstNode_sig.read();
-        dequeueFSM = WAIT_FOR_STREAM_PAIR;
+        dequeueFSM = WAIT_FOR_STREAM;
         //Triangle app needs to be reset to process new rank
       }
       break;
-    case WAIT_FOR_STREAM_PAIR:
+    case WAIT_FOR_STREAM:
       //-- Forward incoming chunk to SHELL
       if ( //!sRxpToTxp_Data.empty() && 
           !sRxtoTx_Meta.empty() 
-          //&& !soTHIS_Shl_Data.full() 
-          //&& !soNrc_meta.full() 
+          //&& !soNrc_data.full() 
+          && !soNrc_meta.full() 
         )
       {
         //udpWordTx = sRxpToTxp_Data.read();
-        //soTHIS_Shl_Data.write(udpWordTx);
+        //soNrc_data.write(udpWordTx);
 
         NetworkMeta meta_in = sRxtoTx_Meta.read().tdata;
-        meta_out = NetworkMeta();
+        NetworkMeta meta_out = NetworkMeta();
         //meta_out_stream.tlast = 1;
         //meta_out_stream.tkeep = 0xFF; //just to be sure!
 
@@ -163,7 +161,7 @@ void pDeq(
         //printf("meat_out.dst_rank: %d\n", (int) meta_out_stream.tdata.dst_rank);
         meta_out.dst_port = DEFAULT_TX_PORT;
         //meta_out.src_rank = (NodeId) *pi_rank;
-        meta_out.src_rank = 0; //will be ignored, it is always this FPGA...
+        meta_out.src_rank = NAL_THIS_FPGA_PSEUDO_NID; //will be ignored, it is always this FPGA...
         meta_out.src_port = DEFAULT_RX_PORT;
         meta_out.len = meta_in.len;
 
@@ -185,14 +183,14 @@ void pDeq(
     //  break;
 
     case PROCESSING_PACKET:
-      if( !sRxpToTxp_Data.empty() && !soTHIS_Shl_Data.full())
+      if( !sRxpToTxp_Data.empty() && !soNrc_data.full())
       {
         udpWordTx = sRxpToTxp_Data.read();
-        soTHIS_Shl_Data.write(udpWordTx);
+        soNrc_data.write(udpWordTx);
 
         if(udpWordTx.tlast == 1)
         {
-          dequeueFSM = WAIT_FOR_STREAM_PAIR;
+          dequeueFSM = WAIT_FOR_STREAM;
         }
 
       }
@@ -217,8 +215,8 @@ void triangle_app(
     //------------------------------------------------------
     //-- SHELL / This / UDP/TCP Interfaces
     //------------------------------------------------------
-    stream<NetworkWord>         &siSHL_This_Data,
-    stream<NetworkWord>         &soTHIS_Shl_Data,
+    stream<NetworkWord>         &siNrc_data,
+    stream<NetworkWord>         &soNrc_data,
     stream<NetworkMetaStream>   &siNrc_meta,
     stream<NetworkMetaStream>   &soNrc_meta,
     ap_uint<32>                 *po_rx_ports
@@ -228,13 +226,13 @@ void triangle_app(
   //-- DIRECTIVES FOR THE BLOCK ---------------------------------------------
 #pragma HLS INTERFACE ap_ctrl_none port=return
 
-#pragma HLS INTERFACE axis register both port=siSHL_This_Data
-#pragma HLS INTERFACE axis register both port=soTHIS_Shl_Data
+#pragma HLS INTERFACE axis register both port=siNrc_data
+#pragma HLS INTERFACE axis register both port=soNrc_data
 
 #pragma HLS INTERFACE axis register both port=siNrc_meta
 #pragma HLS INTERFACE axis register both port=soNrc_meta
 
-#pragma HLS INTERFACE ap_ovld register port=po_rx_ports name=poROL_NRC_Rx_ports
+#pragma HLS INTERFACE ap_vld register port=po_rx_ports name=poROL_NRC_Rx_ports
 #pragma HLS INTERFACE ap_vld register port=pi_rank name=piFMC_ROL_rank
 #pragma HLS INTERFACE ap_vld register port=pi_size name=piFMC_ROL_size
 
@@ -245,12 +243,12 @@ void triangle_app(
   //-- STATIC VARIABLES (with RESET) ------------------------------------------
 
   //-- STATIC DATAFLOW VARIABLES ------------------------------------------
-  static stream<NetworkWord>       sRxpToTxp_Data("sRxpToTxP_Data");
-  static stream<NetworkMetaStream> sRxtoTx_Meta("sRxtoTx_Meta");
-  static stream<NodeId>            sDstNode_sig("sDstNode_sig");
+  static stream<NetworkWord>       sBuffer_Data   ("sBuffer_Data");
+  static stream<NetworkMetaStream> sBuffer_Meta   ("sBuffer_Meta");
+  static stream<NodeId>            sDstNode_sig   ("sDstNode_sig");
 
-#pragma HLS STREAM variable=sRxpToTxp_Data   depth=252
-#pragma HLS STREAM variable=sRxtoTx_Meta     depth=32
+#pragma HLS STREAM variable=sBuffer_Data     depth=252
+#pragma HLS STREAM variable=sBuffer_Meta     depth=32
 #pragma HLS STREAM variable=sDstNode_sig     depth=1
 
 
@@ -258,9 +256,9 @@ void triangle_app(
 
   pPortAndDestionation(pi_rank, pi_size, sDstNode_sig, po_rx_ports);
 
-  pEnq(siNrc_meta, siSHL_This_Data, sRxtoTx_Meta, sRxpToTxp_Data);
+  pEnq(siNrc_meta, siNrc_data, sBuffer_Meta, sBuffer_Data);
 
-  pDeq(sDstNode_sig, sRxtoTx_Meta, sRxpToTxp_Data, soNrc_meta, soTHIS_Shl_Data);
+  pDeq(sDstNode_sig, sBuffer_Meta, sBuffer_Data, soNrc_meta, soNrc_data);
 
 }
 

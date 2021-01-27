@@ -56,7 +56,6 @@ set_top       ${projectName}
 # the -I flag without trailing '/'!!
 add_files     ${srcDir}/${projectName}.cpp -cflags "-I$env(cFpRootDir)/cFDK/SRA/LIB/hls"
 add_files     ${srcDir}/${projectName}.hpp -cflags "-I$env(cFpRootDir)/cFDK/SRA/LIB/hls"
-
 add_files -tb ${testDir}/test_${projectName}.cpp -cflags "-I$env(cFpRootDir)/cFDK/SRA/LIB/hls"
 
 # Create a solution

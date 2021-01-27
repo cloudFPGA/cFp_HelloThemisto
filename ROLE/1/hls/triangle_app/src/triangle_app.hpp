@@ -45,9 +45,9 @@ using namespace hls;
 
 
 #define WAIT_FOR_META 0
-#define WAIT_FOR_STREAM_PAIR 1
-#define WRITE_META 2
-#define PROCESSING_PACKET 3
+#define WAIT_FOR_STREAM 1
+#define PROCESSING_PACKET 2
+//#define WRITE_META 2
 #define PacketFsmType uint8_t
 
 #define FSM_WRITE_NEW_DATA 0
@@ -64,8 +64,8 @@ void triangle_app(
     //------------------------------------------------------
     //-- SHELL / This / UDP/TCP Interfaces
     //------------------------------------------------------
-    stream<NetworkWord>         &siSHL_This_Data,
-    stream<NetworkWord>         &soTHIS_Shl_Data,
+    stream<NetworkWord>         &siNrc_data,
+    stream<NetworkWord>         &soNrc_data,
     stream<NetworkMetaStream>   &siNrc_meta,
     stream<NetworkMetaStream>   &soNrc_meta,
     ap_uint<32>                 *po_rx_ports

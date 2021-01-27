@@ -242,19 +242,19 @@ architecture Flash of Role_Themisto is
       --------------------------------------------------------
       -- From SHELL / Udp Data Interfaces
       --------------------------------------------------------
-           siSHL_This_Data_tdata     : in  std_logic_vector( 63 downto 0);
-           siSHL_This_Data_tkeep     : in  std_logic_vector(  7 downto 0);
-           siSHL_This_Data_tlast     : in  std_logic;
-           siSHL_This_Data_tvalid    : in  std_logic;
-           siSHL_This_Data_tready    : out std_logic;
+           siNrc_data_TDATA     : in  std_logic_vector( 63 downto 0);
+           siNrc_data_TKEEP     : in  std_logic_vector(  7 downto 0);
+           siNrc_data_TLAST     : in  std_logic;
+           siNrc_data_TVALID    : in  std_logic;
+           siNrc_data_TREADY    : out std_logic;
       --------------------------------------------------------
       -- To SHELL / Udp Data Interfaces
       --------------------------------------------------------
-           soTHIS_Shl_Data_tdata     : out std_logic_vector( 63 downto 0);
-           soTHIS_Shl_Data_tkeep     : out std_logic_vector(  7 downto 0);
-           soTHIS_Shl_Data_tlast     : out std_logic;
-           soTHIS_Shl_Data_tvalid    : out std_logic;
-           soTHIS_Shl_Data_tready    : in  std_logic;
+           soNrc_data_TDATA     : out std_logic_vector( 63 downto 0);
+           soNrc_data_TKEEP     : out std_logic_vector(  7 downto 0);
+           soNrc_data_TLAST     : out std_logic;
+           soNrc_data_TVALID    : out std_logic;
+           soNrc_data_TREADY    : in  std_logic;
       -- NRC Meta and Ports
            siNrc_meta_TDATA          : in std_logic_vector (63 downto 0);
            siNrc_meta_TVALID         : in std_logic;
@@ -351,19 +351,19 @@ begin
              --------------------------------------------------------
              -- From SHELL / Udp Data Interfaces
              --------------------------------------------------------
-             siSHL_This_Data_tdata     => siNRC_Udp_Data_tdata,
-             siSHL_This_Data_tkeep     => siNRC_Udp_Data_tkeep,
-             siSHL_This_Data_tlast     => siNRC_Udp_Data_tlast,
-             siSHL_This_Data_tvalid    => siNRC_Udp_Data_tvalid,
-             siSHL_This_Data_tready    => siNRC_Udp_Data_tready,
+             siNrc_data_TDATA     => siNRC_Udp_Data_tdata,
+             siNrc_data_TKEEP     => siNRC_Udp_Data_tkeep,
+             siNrc_data_TLAST     => siNRC_Udp_Data_tlast,
+             siNrc_data_TVALID    => siNRC_Udp_Data_tvalid,
+             siNrc_data_TREADY    => siNRC_Udp_Data_tready,
              --------------------------------------------------------
              -- To SHELL / Udp Data Interfaces
              --------------------------------------------------------
-             soTHIS_Shl_Data_tdata     => soNRC_Udp_Data_tdata,
-             soTHIS_Shl_Data_tkeep     => soNRC_Udp_Data_tkeep,
-             soTHIS_Shl_Data_tlast     => soNRC_Udp_Data_tlast,
-             soTHIS_Shl_Data_tvalid    => soNRC_Udp_Data_tvalid,
-             soTHIS_Shl_Data_tready    => soNRC_Udp_Data_tready, 
+             soNrc_data_TDATA     => soNRC_Udp_Data_tdata,
+             soNrc_data_TKEEP     => soNRC_Udp_Data_tkeep,
+             soNrc_data_TLAST     => soNRC_Udp_Data_tlast,
+             soNrc_data_TVALID    => soNRC_Udp_Data_tvalid,
+             soNrc_data_TREADY    => soNRC_Udp_Data_tready,
 
              siNrc_meta_TDATA          =>  siNRC_Role_Udp_Meta_TDATA    ,
              siNrc_meta_TVALID         =>  siNRC_Role_Udp_Meta_TVALID   ,
@@ -418,19 +418,19 @@ begin
              --------------------------------------------------------
              -- From SHELL / Udp Data Interfaces
              --------------------------------------------------------
-             siSHL_This_Data_tdata     => siNRC_Tcp_Data_tdata,
-             siSHL_This_Data_tkeep     => siNRC_Tcp_Data_tkeep,
-             siSHL_This_Data_tlast     => siNRC_Tcp_Data_tlast,
-             siSHL_This_Data_tvalid    => siNRC_Tcp_Data_tvalid,
-             siSHL_This_Data_tready    => siNRC_Tcp_Data_tready,
+             siNrc_data_TDATA     => siNRC_Tcp_Data_tdata,
+             siNrc_data_TKEEP     => siNRC_Tcp_Data_tkeep,
+             siNrc_data_TLAST     => siNRC_Tcp_Data_tlast,
+             siNrc_data_TVALID    => siNRC_Tcp_Data_tvalid,
+             siNrc_data_TREADY    => siNRC_Tcp_Data_tready,
              --------------------------------------------------------
              -- To SHELL / Udp Data Interfaces
              --------------------------------------------------------
-             soTHIS_Shl_Data_tdata     => soNRC_Tcp_Data_tdata,
-             soTHIS_Shl_Data_tkeep     => soNRC_Tcp_Data_tkeep,
-             soTHIS_Shl_Data_tlast     => soNRC_Tcp_Data_tlast,
-             soTHIS_Shl_Data_tvalid    => soNRC_Tcp_Data_tvalid,
-             soTHIS_Shl_Data_tready    => soNRC_Tcp_Data_tready, 
+             soNrc_data_TDATA     => soNRC_Tcp_Data_tdata,
+             soNrc_data_TKEEP     => soNRC_Tcp_Data_tkeep,
+             soNrc_data_TLAST     => soNRC_Tcp_Data_tlast,
+             soNrc_data_TVALID    => soNRC_Tcp_Data_tvalid,
+             soNrc_data_TREADY    => soNRC_Tcp_Data_tready, 
 
              siNrc_meta_TDATA          =>  siNRC_Role_Tcp_Meta_TDATA    ,
              siNrc_meta_TVALID         =>  siNRC_Role_Tcp_Meta_TVALID   ,

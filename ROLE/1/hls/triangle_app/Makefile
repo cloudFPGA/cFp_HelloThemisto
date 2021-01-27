@@ -38,7 +38,7 @@ ${ipName}_prj/solution1/impl/ip: $(DEPS)
 	@touch $@
 	@touch ../../.ip_guard
 
-csim: assert_env
+csim: assert_env clean
 	export hlsSim=1; export hlsCoSim=0; vivado_hls -f run_hls.tcl
 
 

@@ -64,8 +64,8 @@ void upper_lower_app(
     //------------------------------------------------------
     //-- SHELL / This / UDP/TCP Interfaces
     //------------------------------------------------------
-    stream<NetworkWord>         &siSHL_This_Data,
-    stream<NetworkWord>         &soTHIS_Shl_Data,
+    stream<NetworkWord>         &siNrc_data,
+    stream<NetworkWord>         &soNrc_data,
     stream<NetworkMetaStream>   &siNrc_meta,
     stream<NetworkMetaStream>   &soNrc_meta,
     ap_uint<32>                 *po_rx_ports

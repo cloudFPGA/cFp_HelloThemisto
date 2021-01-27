@@ -119,7 +119,7 @@ void pPortAndDestionation(
 
 void pEnq(
     stream<NetworkMetaStream>   &siNrc_meta,
-    stream<NetworkWord>         &siSHL_This_Data,
+    stream<NetworkWord>         &siNrc_data,
     stream<NetworkMetaStream>   &sRxtoTx_Meta,
     stream<NetworkWord>         &sRxpToTxp_Data
     )
@@ -131,9 +131,9 @@ void pEnq(
   static PacketFsmType enqueueFSM = WAIT_FOR_META;
 #pragma HLS reset variable=enqueueFSM
   //-- LOCAL VARIABLES ------------------------------------------------------
-  NetworkWord udpWord;
+  NetworkWord udpWord = NetworkWord();
   NetworkMetaStream  meta_tmp = NetworkMetaStream();
-  NetworkWord newWord;
+  NetworkWord newWord = NetworkWord();
   
   switch(enqueueFSM)
   {
@@ -149,10 +149,10 @@ void pEnq(
       break;
 
     case PROCESSING_PACKET:
-      if ( !siSHL_This_Data.empty() && !sRxpToTxp_Data.full() )
+      if ( !siNrc_data.empty() && !sRxpToTxp_Data.full() )
       {
         //-- Read incoming data chunk
-        udpWord = siSHL_This_Data.read();
+        udpWord = siNrc_data.read();
         newWord = NetworkWord(invert_word(udpWord.tdata), udpWord.tkeep, udpWord.tlast);
         sRxpToTxp_Data.write(newWord);
         if(udpWord.tlast == 1)
@@ -170,7 +170,7 @@ void pDeq(
     stream<NetworkMetaStream>   &sRxtoTx_Meta,
     stream<NetworkWord>         &sRxpToTxp_Data,
     stream<NetworkMetaStream>   &soNrc_meta,
-    stream<NetworkWord>         &soTHIS_Shl_Data
+    stream<NetworkWord>         &soNrc_data
     )
 {
   //-- DIRECTIVES FOR THIS PROCESS ------------------------------------------
@@ -183,7 +183,7 @@ void pDeq(
   static NetworkMeta meta_out;
   static NodeId dst_rank;
   //-- LOCAL VARIABLES ------------------------------------------------------
-  NetworkWord  udpWordTx;
+  NetworkWord  udpWordTx = NetworkWord();
   //NetworkMeta  meta_in = NetworkMeta();
 
   switch(dequeueFSM)
@@ -201,12 +201,12 @@ void pDeq(
       //-- Forward incoming chunk to SHELL
       if ( //!sRxpToTxp_Data.empty() && 
           !sRxtoTx_Meta.empty() 
-          //&& !soTHIS_Shl_Data.full() 
+          //&& !soNrc_data.full() 
           //&& !soNrc_meta.full() 
         )
       {
         //udpWordTx = sRxpToTxp_Data.read();
-        //soTHIS_Shl_Data.write(udpWordTx);
+        //soNrc_data.write(udpWordTx);
 
         NetworkMeta meta_in = sRxtoTx_Meta.read().tdata;
         meta_out = NetworkMeta();
@@ -240,10 +240,10 @@ void pDeq(
     //  break;
 
     case PROCESSING_PACKET:
-      if( !sRxpToTxp_Data.empty() && !soTHIS_Shl_Data.full())
+      if( !sRxpToTxp_Data.empty() && !soNrc_data.full())
       {
         udpWordTx = sRxpToTxp_Data.read();
-        soTHIS_Shl_Data.write(udpWordTx);
+        soNrc_data.write(udpWordTx);
 
         if(udpWordTx.tlast == 1)
         {
@@ -273,8 +273,8 @@ void upper_lower_app(
     //------------------------------------------------------
     //-- SHELL / This / UDP/TCP Interfaces
     //------------------------------------------------------
-    stream<NetworkWord>         &siSHL_This_Data,
-    stream<NetworkWord>         &soTHIS_Shl_Data,
+    stream<NetworkWord>         &siNrc_data,
+    stream<NetworkWord>         &soNrc_data,
     stream<NetworkMetaStream>   &siNrc_meta,
     stream<NetworkMetaStream>   &soNrc_meta,
     ap_uint<32>                 *po_rx_ports
@@ -284,8 +284,8 @@ void upper_lower_app(
   //-- DIRECTIVES FOR THE BLOCK ---------------------------------------------
 #pragma HLS INTERFACE ap_ctrl_none port=return
 
-#pragma HLS INTERFACE axis register both port=siSHL_This_Data
-#pragma HLS INTERFACE axis register both port=soTHIS_Shl_Data
+#pragma HLS INTERFACE axis register both port=siNrc_data
+#pragma HLS INTERFACE axis register both port=soNrc_data
 
 #pragma HLS INTERFACE axis register both port=siNrc_meta
 #pragma HLS INTERFACE axis register both port=soNrc_meta
@@ -314,9 +314,9 @@ void upper_lower_app(
 
   pPortAndDestionation(pi_rank, pi_size, sDstNode_sig, po_rx_ports);
 
-  pEnq(siNrc_meta, siSHL_This_Data, sRxtoTx_Meta, sRxpToTxp_Data);
+  pEnq(siNrc_meta, siNrc_data, sRxtoTx_Meta, sRxpToTxp_Data);
 
-  pDeq(sDstNode_sig, sRxtoTx_Meta, sRxpToTxp_Data, soNrc_meta, soTHIS_Shl_Data);
+  pDeq(sDstNode_sig, sRxtoTx_Meta, sRxpToTxp_Data, soNrc_meta, soNrc_data);
 
 }
 

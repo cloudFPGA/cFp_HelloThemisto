@@ -200,9 +200,9 @@ void pDeq(
     case WAIT_FOR_STREAM_PAIR:
       //-- Forward incoming chunk to SHELL
       if ( //!sRxpToTxp_Data.empty() && 
-          !sRxtoTx_Meta.empty() 
+          !sRxtoTx_Meta.empty()
           //&& !soNrc_data.full() 
-          //&& !soNrc_meta.full() 
+          && !soNrc_meta.full()
         )
       {
         //udpWordTx = sRxpToTxp_Data.read();
@@ -290,7 +290,7 @@ void upper_lower_app(
 #pragma HLS INTERFACE axis register both port=siNrc_meta
 #pragma HLS INTERFACE axis register both port=soNrc_meta
 
-#pragma HLS INTERFACE ap_ovld register port=po_rx_ports name=poROL_NRC_Rx_ports
+#pragma HLS INTERFACE ap_vld register port=po_rx_ports name=poROL_NRC_Rx_ports
 #pragma HLS INTERFACE ap_vld register port=pi_rank name=piFMC_ROL_rank
 #pragma HLS INTERFACE ap_vld register port=pi_size name=piFMC_ROL_size
 

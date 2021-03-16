@@ -1,12 +1,27 @@
+# /*******************************************************************************
+#  * Copyright 2016 -- 2020 IBM Corporation
+#  *
+#  * Licensed under the Apache License, Version 2.0 (the "License");
+#  * you may not use this file except in compliance with the License.
+#  * You may obtain a copy of the License at
+#  *
+#  *     http://www.apache.org/licenses/LICENSE-2.0
+#  *
+#  * Unless required by applicable law or agreed to in writing, software
+#  * distributed under the License is distributed on an "AS IS" BASIS,
+#  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  * See the License for the specific language governing permissions and
+#  * limitations under the License.
+# *******************************************************************************/
+
 #  *
 #  *                       cloudFPGA
-#  *     Copyright IBM Research, All Rights Reserved
 #  *    =============================================
-#  *     Created: Apr 2019
+#  *     Created: May 2018
 #  *     Authors: FAB, WEI, NGL
 #  *
 #  *     Description:
-#  *        TCL file execute the Vivado commands
+#  *        TCL file to execute the Vivado commands
 #  *
 
 
@@ -16,7 +31,6 @@ package require cmdline
 
 # Set the Global Settings used by the SHELL Project
 #-------------------------------------------------------------------------------
-#source xpr_settings.tcl
 source ../../cFDK/SRA/LIB/tcl/xpr_settings.tcl
 
 # import environment Variables
@@ -394,46 +408,6 @@ if { ${create} } {
 
   if { $forceWithoutBB } {
 
-
-    set MdlHdlFile ${rootDir}/cFDK/SRA/LIB/MIDLW/${cFpSRAtype}/Middleware.vhdl
-    # we don't know, if this Shell has a Middleware?
-    if { [ file exists ${MdlHdlFile} ] && ${midlwActive} } {
-      # Add HDL Source Files for the MIDDLEWARE and turn VHDL-2008 mode on
-      #---------------------------------------------------------------------------
-      add_files  ${MdlHdlFile}
-      set_property file_type {VHDL 2008} [ get_files  ${MdlHdlFile} ]
-      update_compile_order -fileset sources_1
-      my_dbg_trace "Finished adding the  HDL files of the MIDDLEWARE." ${dbgLvl_1}
-
-      #setting IP and HLS folder
-      #ipDirMidlw comes from xpr_settings!!
-      #general LIB  folder
-      set hlsDirMidlw ${rootDir}/cFDK/SRA/LIB/MIDLW/LIB/hls/
-      set_property ip_repo_paths [ concat [ get_property ip_repo_paths [current_project] ] \
-      ${ipDirMidlw} ${hlsDirMidlw} ] [current_project]
-
-      #SRA specific dir
-      set hlsDirMidlw ${rootDir}/cFDK/SRA/LIB/MIDLW/${cFpSRAtype}/hls/
-      set_property ip_repo_paths [ concat [ get_property ip_repo_paths [current_project] ] \
-      ${ipDirMidlw} ${hlsDirMidlw} ] [current_project]
-
-
-      # Add *ALL* the User-based IPs (i.e. VIVADO- as well HLS-based) needed for the MIDDLEWARE. 
-      #---------------------------------------------------------------------------
-      set ipList [ glob -nocomplain ${ipDirMidlw}/ip_user_files/ip/* ]
-      if { $ipList ne "" } {
-        foreach ip $ipList {
-          set ipName [file tail ${ip} ]
-          add_files ${ipDirMidlw}/${ipName}/${ipName}.xci
-          my_dbg_trace "Done with add_files for MIDDLEWARE: ${ipDir}/${ipName}/${ipName}.xci" 2
-        }
-      }
-
-      update_ip_catalog
-      my_dbg_trace "Done with update_ip_catalog for the MIDDLEWARE" ${dbgLvl_1}
-    }
-
-
     # Add HDL Source Files for the ROLE and turn VHDL-2008 mode on
     #---------------------------------------------------------------------------
     add_files  ${usedRoleDir}/hdl/
@@ -664,20 +638,10 @@ if { ${link} } {
 
   set_property SCOPED_TO_CELLS {ROLE} [get_files ${roleDcpFile} ]
 
-  if { $midlwActive } {
-    #TODO: select multiple middlewares
-    set mdlwDcpFile ${rootDir}/cFDK/SRA/LIB/MIDLW/${cFpSRAtype}/MIDLW_${cFpSRAtype}_OOC.dcp
-    add_files ${mdlwDcpFile}
-    update_compile_order -fileset sources_1
-    my_dbg_trace "Added dcp of MIDDLEWARE ${mdlwDcpFile}." ${dbgLvl_1}
-
-    set_property SCOPED_TO_CELLS {MIDLW} [get_files ${mdlwDcpFile} ]
-  }
-
   open_run synth_1 -name synth_1
   # Link the two dcps together
   #link_design -mode default -reconfig_partitions {ROLE}  -top ${topName} -part ${xilPartName} 
-  ### CAVE: link_design is done by open_design in project mode!!
+  ### NOTE: link_design is done by open_design in project mode!!
   # to prevent the "out-of-date" message; we just added an alreday synthesized dcp -> not necessary
   set_property needs_refresh false [get_runs synth_1]
   
@@ -703,15 +667,6 @@ if { ${link} } {
     my_puts "################################################################################"
     my_puts "## ADDED Partial Reconfiguration Constraint File: ${prConstrFile}; PBLOCK CREATED;"
     my_puts "################################################################################"
-
-    if { $midlwActive } { 
-      set mdlwPrConstrFile "${xdcDir}/topFMKU60_midlw_pr.xdc"
-      add_files -fileset ${constrObj} ${mdlwPrConstrFile} 
-    
-      my_puts "################################################################################"
-      my_puts "## ADDED Partial Reconfiguration Constraint File: ${mdlwPrConstrFile}; PBLOCK CREATED;"
-      my_puts "################################################################################"
-    }
 
     write_checkpoint -force ${dcpDir}/1_${topName}_linked_pr.dcp
   } else {
@@ -821,12 +776,7 @@ if { ${impl1} || ( $forceWithoutBB && $impl1 ) } {
       # now, black box 
       update_design -cell ROLE -black_box
 
-      #TODO right now, we support only one MIDLW...so better not
-      #if { $midlwActive } { 
-      #  update_design -cell MIDLW -black_box
-      #}
-      
-      lock_design -level routing 
+      lock_design -level routing
       
       write_checkpoint -force ${dcpDir}/3_${topName}_STATIC.dcp
       

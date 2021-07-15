@@ -83,7 +83,7 @@ For further instructions, please refer to the `Triangle-example.pdf` or the `cFp
 
 The `Themisto_SRA.pdf` (or the `cFDK/DOC/Themisto.md`) explains the details of the cFDK network and memory interfaces.
 
-In case you want to open the created Vivado project, execute `vivado cFp_some_name/xrp/topFMKU60.xpr`. This is not necessary to use the cFDK, but some people are curious... ;)
+In case you want to open the created Vivado project, execute `vivado cFp_some_name/xpr/topFMKU60.xpr`. This is not necessary to use the cFDK, but some people are curious... ;) Also, debug probes can be inserted that way.
 
 ## Final notices
 

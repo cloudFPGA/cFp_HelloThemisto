@@ -81,7 +81,9 @@ This bitfile can be uploaded via `POST /cluster` to the cloudFPGA Resource Manag
 
 For further instructions, please refer to the `Triangle-example.pdf` or the `cFp_Triangle/Readme.md`.
 
-The `Themisto_SRA.pdf` (or the `cFDK/DOC/Themisto.md`) explains the details of the cFDK network and memory interfaces. 
+The `Themisto_SRA.pdf` (or the `cFDK/DOC/Themisto.md`) explains the details of the cFDK network and memory interfaces.
+
+In case you want to open the created Vivado project, execute `vivado cFp_some_name/xrp/topFMKU60.xpr`. This is not necessary to use the cFDK, but some people are curious... ;)
 
 ## Final notices
 

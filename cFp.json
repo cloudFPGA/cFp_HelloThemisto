@@ -18,6 +18,9 @@
                 "path": "2/"
             }
         ],
-        "active_role": "1"
+        "active_role": "1",
+        "admin": {
+            "2nd-role": "2"
+        }
     }
 }

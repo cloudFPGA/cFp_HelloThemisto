@@ -204,7 +204,7 @@ def main():
                 store_updated_cfp_json = True
             else:
                 print("[Lignin:ERROR] No role with name {} is defined.".format(del_role))
-    elif arguments['build']:
+    elif arguments['build'] and not arguments['admin']:
         cur_active_role = cFp_data[__lignin_key__]['active_role']
         if arguments['--role'] is not None:
             cur_active_role = arguments['--role']
@@ -341,7 +341,7 @@ def main():
                                           cur_active_role_dict['name'], cur_active_role_dict['path'], make_cmd))
                     elif arguments['pr_full']:
                         # two active roles are required
-                        cur_active_role_2 = cFp_data[__lignin_key__]['active_role']
+                        cur_active_role_2 = cFp_data[__lignin_key__][__admin_key__]['2nd-role']
                         if cur_active_role_2 == __none_key__ or cur_active_role_2 == __to_be_defined_key__:
                             print("[Lignin:ERROR] A 2nd role must be set active first.")
                         else:
@@ -355,8 +355,8 @@ def main():
                             if not is_existing:
                                 print("[Lignin:ERROR] No role with name {} is defined.".format(cur_active_role_2))
                             else:
-                                info_str = "[Lignin:INFO] Starting to build all files for a new platform logic, \
-                                            using roles {} and {}" \
+                                info_str = "[Lignin:INFO] Starting to build a *complete* partial reconfiguration design, " + \
+                                            "using roles {} and {}" \
                                     .format(cur_active_role, cur_active_role_2)
                                 make_cmd = 'pr_full'
                                 info_str += '...'

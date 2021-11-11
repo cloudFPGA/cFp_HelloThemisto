@@ -27,16 +27,18 @@ function exit_on_error {
 }
 
 # STEP-0: We need to set the right environment
-export rootDir="$cFpRootDir/"  #the / is IMPORTANT
-export cFpIpDir="$rootDir/ip/"
-export cFpMOD="FMKU60"
-export usedRoleDir="$rootDir/ROLE/1/"
-export usedRole2Dir="$rootDir/ROLE/2/"
-export cFpSRAtype="Themisto"
-export cFpXprDir="$rootDir/xpr/"
-export cFpDcpDir="$rootDir/dcps/"
-export roleName1="R1"
-export roleName2="R2"
+# export rootDir="$cFpRootDir/"  #the / is IMPORTANT
+# export cFpIpDir="$rootDir/ip/"
+# export cFpMOD="FMKU60"
+# export usedRoleDir="$rootDir/ROLE/1/"
+# export usedRole2Dir="$rootDir/ROLE/2/"
+# export cFpSRAtype="Themisto"
+# export cFpXprDir="$rootDir/xpr/"
+# export cFpDcpDir="$rootDir/dcps/"
+# export roleName1="R1"
+# export roleName2="R2"
+# BETTER: use the env script
+source $cFpRootDir/env/setenv.sh
 
 #also, we need a license:
 export XILINXD_LICENSE_FILE=2100@pokwinlic1.pok.ibm.com:2100@pokwinlic2.pok.ibm.com:2100@pokwinlic3.pok.ibm.com

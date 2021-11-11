@@ -23,6 +23,11 @@
 #  *     Description:
 #  *       Python script to create build signature file
 #  *
+#  *     ATTENTION: DO NOT MODIFY! (not even a single comma!)
+#  *     This file is here to protect YOU from damaging FPGAs
+#  *     during partial reconfiguration. Any change could cause
+#  *     hardware damage, potentially. Thanks ;).
+#  *
 
 import sys
 import os

@@ -38,7 +38,8 @@ __credentials_file_name__ = "user.json"
 __openstack_user_template__ = {'credentials': {'user': "your user name", 'pw': "your user password"},
                                'project': "default"}
 
-__cf_manager_url__ = "10.12.0.132:8080"
+# __cf_manager_url__ = "10.12.0.132:8080"
+__cf_manager_url__ = "10.12.0.132:8082"
 
 
 def load_user_credentials(filedir):

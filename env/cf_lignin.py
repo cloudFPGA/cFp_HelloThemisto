@@ -108,6 +108,7 @@ def main():
     # first, get and parse cFp.json
     cfp_root = os.environ['cFpRootDir']
     cfp_env_folder = os.path.abspath(cfp_root + '/env/')
+    cfenv_small_py_bin = os.path.abspath(cfp_root + 'env/cfenv-small/bin/python3.8')
     cfp_json_file = os.path.abspath(cfp_root + '/' + __cfp_json_name__)
     with open(cfp_json_file, 'r') as json_file:
         cFp_data = json.load(json_file)
@@ -139,7 +140,8 @@ def main():
     # handle arguments
     # FIXME: I know, bad programming stile with endless indents instead of return...cleanup after first tests...
     if arguments['update-shell']:
-        os.system("{} {}/get_latest_dcp.py".format(os.environ['cFpsysPy3_cmd'], cfp_env_folder))
+        # os.system("{} {}/get_latest_dcp.py".format(os.environ['cFsysPy3_cmd'], cfp_env_folder))
+        os.system("{} {}/get_latest_dcp.py".format(cfenv_small_py_bin, cfp_env_folder))
     elif arguments['clean']:
         if arguments['--full']:
             os.system('cd {}; make full_clean'.format(cfp_root))
@@ -270,7 +272,8 @@ def main():
                     else:
                         # check for dcp
                         if not os.path.isfile(dcp_file_path) or not os.path.isfile(meta_file_path):
-                            os.system("{} {}/get_latest_dcp.py".format(os.environ['cFpsysPy3_cmd'], cfp_env_folder))
+                            # os.system("{} {}/get_latest_dcp.py".format(os.environ['cFsysPy3_cmd'], cfp_env_folder))
+                            os.system("{} {}/get_latest_dcp.py".format(cfenv_small_py_bin, cfp_env_folder))
                     info_str += '...'
                     print(info_str)
                     # start make and OVERWRITE the environment variables
@@ -350,8 +353,8 @@ def main():
                         os.system('cd {}; export roleName1={}; export usedRoleDir={}; \
                                     export roleName2={}; export usedRoleDir2={}; make {}'
                                   .format(cfp_root,
-                                          cur_active_role_dict['name'], get_cfp_role_path(cfp_root, cur_active_role_dict),
-                                          __to_be_defined_key__, __to_be_defined_key__,  # role 2 should be ignored totally?
+                                           cur_active_role_dict['name'], get_cfp_role_path(cfp_root, cur_active_role_dict),
+                                          __to_be_defined_key__, __to_be_defined_key__,  # role 2 should be totally ignored?
                                           # cur_active_role_dict['name'], get_cfp_role_path(cfp_root, cur_active_role_dict),
                                           make_cmd))
                     elif arguments['pr_full']:

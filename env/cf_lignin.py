@@ -274,6 +274,9 @@ def main():
                         if not os.path.isfile(dcp_file_path) or not os.path.isfile(meta_file_path):
                             # os.system("{} {}/get_latest_dcp.py".format(os.environ['cFsysPy3_cmd'], cfp_env_folder))
                             os.system("{} {}/get_latest_dcp.py".format(cfenv_small_py_bin, cfp_env_folder))
+                            if not os.path.isfile(dcp_file_path):
+                                print("Lignin:ERROR] No DCP present, can not build pr designs. Stop.")
+                                return -1
                     info_str += '...'
                     print(info_str)
                     # start make and OVERWRITE the environment variables

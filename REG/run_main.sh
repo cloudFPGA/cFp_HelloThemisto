@@ -26,6 +26,7 @@ function exit_on_error {
     fi
 }
 
+echo "Set cFp environment."
 # STEP-0: We need to set the right environment
 # export rootDir="$cFpRootDir/"  #the / is IMPORTANT
 # export cFpIpDir="$rootDir/ip/"
@@ -37,14 +38,16 @@ function exit_on_error {
 # export cFpDcpDir="$rootDir/dcps/"
 # export roleName1="R1"
 # export roleName2="R2"
+
 # BETTER: use the env script
 source $cFpRootDir/env/setenv.sh
 
 #also, we need a license:
 export XILINXD_LICENSE_FILE=2100@pokwinlic1.pok.ibm.com:2100@pokwinlic2.pok.ibm.com:2100@pokwinlic3.pok.ibm.com
 
+# finally, we need to exchange the Makefiles
+cp -f $cFpRootDir/REG/Makefile $cFpRootDir/TOP/tcl/Makefile
 
-echo "Set cFp environment."
 retval=1
 
 echo "================================================================"

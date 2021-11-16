@@ -36,8 +36,6 @@ Answer the questions with:
 
 1. `FMKU60`
 2. `Themisto`
-   
-   
 
 Afterwards, the `cFp_some_name` folder should contain the basic structure:
 
@@ -71,9 +69,7 @@ source env/setenv.sh  # important!
 ./lignin build pr   # building partial bitfile for the 1st role
 ```
 
-The command `./lignin update-shell` requires a connection to the CFRM (cloudFPGA Resource Manager inside ZYC2) and your account credentials (stored in `user.json`). However, this is only required if a new Shell version is released, so it is also suitable if this command is run on another machine (with ZYC2 access) and the downloaded files (`dcps/3_topFMKU60_STATIC.dcp` and `dcps/3_topFMKU60_STATIC.json`) are copied to the build machine.
-
-
+The command `./lignin update-shell` requires a connection to the CFRM (cloudFPGA Resource Manager inside ZYC2) and your account credentials (stored in `user.json`). However, this is only required if a new Shell version is released, so it is also suitable if this command is run on another machine (with ZYC2 access) and the downloaded files (`dcps/3_topFMKU60_STATIC.dcp` and `dcps/3_topFMKU60_STATIC.json`) are copied to the build machine (*see details below*).
 
 After ~45min, bitfile will be in `cFp_some_name/dcps.`  With the role name `1st-role` the result should look like:
 
@@ -91,7 +87,17 @@ $ ls -al dcps/
  pr_verify.rpt
 ```
 
- 
+## ### getting latest Shell manually
+
+1. Go to the CFRM and to the API call `GET /composablelogic/py_shell/` , and ask for `Themisto`.
+
+2. pick the newest entry in the returned list (i.e. the highest `id`)
+
+3. with this **cl_id**, download the dcp from the call `GET /composablelogic/{cl_id}/dcp` and save it as `3_topFMKU60_STATIC.dcp` in the `dcp` folder (and maybe somewhere else, to copy it again after a `make clean`).
+
+4. proceed similarly with `GET /composablelogic/{cl_id}/meta` and save the returning JSON as `3_topFMKU60_STATIC.json` in the same place
+
+5. continue with `./lignin build pr`
 
 ## 3. Uploading partial bitfile as app image
 
@@ -188,14 +194,16 @@ $ firewall-cmd --reload
 
 Also, ensure that the network security group settings are updated (e.g. in case of the ZYC2 OpenStack).
 
-
-
 ## Final notices
 
 * You should *not* change anything inside the `cFDK` , `env`, or `TOP` folders, since this is maintained by us and maybe overwritten with the next version release.
+
 * If you want to use Git as version management system, the `--git-init` flag for the `cFCreate new` command is recommended.
+
 * All scripts and Makefiles  require the cFDK environment, so always run `source env/setenv.sh` in new terminals.
+
 * The `Themisto_SRA.pdf` (or the `cFDK/DOC/Themisto.md`) explains the details of the cFDK network and memory interfaces.
+
 * In case you want to open the created Vivado project, execute `vivado cFp_some_name/xpr/topFMKU60.xpr`. This is not necessary to use the cFDK, but some people are curious... ;) Also, debug probes can be inserted that way.
   
   (However, debugging with partial bitfiles is not yet supported).

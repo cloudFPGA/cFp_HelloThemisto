@@ -1,0 +1,6 @@
+cat GET.request.dos | socat stdio tcp:10.12.200.34:8803,shut-none
+
+
+time cat post_role | socat stdio,shut-none tcp:10.12.200.34:8803,shut-none
+
+

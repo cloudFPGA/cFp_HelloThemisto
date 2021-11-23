@@ -44,7 +44,7 @@ $ tree -L 1
 .
 ├── cFDK
 ├── cFp.json
-├── lignin
+├── sra
 ├── env
 ├── Makefile
 ├── ROLE
@@ -63,13 +63,13 @@ Once a cFp, its `env` folder, and its `cFp.json` are created, it can be build wi
 cd cFp_some_name
 source /opt/Xilinx/Vivado/2019.2/settings64.sh  # or whereever it is installed
 source env/setenv.sh  # important!
-./lignin config add-role ./ROLE/ "1st-role"   # add role to project config
-./lignin config use-role "1st-role"  # set as active role
-./lignin update-shell  # getting latest .dcp
-./lignin build pr   # building partial bitfile for the 1st role
+./sra config add-role ./ROLE/ "1st-role"   # add role to project config
+./sra config use-role "1st-role"  # set as active role
+./sra update-shell  # getting latest .dcp
+./sra build pr   # building partial bitfile for the 1st role
 ```
 
-The command `./lignin update-shell` requires a connection to the CFRM (cloudFPGA Resource Manager inside ZYC2) and your account credentials (stored in `user.json`). However, this is only required if a new Shell version is released, so it is also suitable if this command is run on another machine (with ZYC2 access) and the downloaded files (`dcps/3_topFMKU60_STATIC.dcp` and `dcps/3_topFMKU60_STATIC.json`) are copied to the build machine (*see details below*).
+The command `./sra update-shell` requires a connection to the CFRM (cloudFPGA Resource Manager inside ZYC2) and your account credentials (stored in `user.json`). However, this is only required if a new Shell version is released, so it is also suitable if this command is run on another machine (with ZYC2 access) and the downloaded files (`dcps/3_topFMKU60_STATIC.dcp` and `dcps/3_topFMKU60_STATIC.json`) are copied to the build machine (*see details below*).
 
 After ~45min, bitfile will be in `cFp_some_name/dcps.`  With the role name `1st-role` the result should look like:
 
@@ -97,7 +97,7 @@ $ ls -al dcps/
 
 4. proceed similarly with `GET /composablelogic/{cl_id}/meta` and save the returning JSON as `3_topFMKU60_STATIC.json` in the same place
 
-5. continue with `./lignin build pr`
+5. continue with `./sra build pr`
 
 ## 3. Uploading partial bitfile as app image
 

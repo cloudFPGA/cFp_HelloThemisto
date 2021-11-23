@@ -404,7 +404,7 @@ def main():
                "afterwards:\n"
             srat_bashrc = '--------------\n' \
                   'srafunc(){\n\tcur_pwd=$(pwd)\n\tsrat=$cur_pwd/sra\n\tif [ -f "$srat" ]; then\n\t\t$srat $@\n\telse' \
-                  '\n\t\techo "Error: No cloudFPGA sra tools present in this folder.\n\tfi\n}\n\nalias sra=srafunc\n' \
+                  '\n\t\techo "Error: No cloudFPGA sra tools present in this folder."\n\tfi\n}\n\nalias sra=srafunc\n' \
                   '--------------\n'
             print(srat_fyi + srat_bashrc)
             os.system('cd {}/env; echo -e "export SraToolHintWasShown=1\n" >> this_machine_env.sh'

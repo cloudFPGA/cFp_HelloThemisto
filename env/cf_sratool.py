@@ -30,7 +30,7 @@ import os
 import sys
 from docopt import docopt
 
-__version__ = 0.2
+__version__ = 0.3
 
 docstr = """sra tools -- cloudFPGA Project Build & Management Framework
 
@@ -326,7 +326,7 @@ def main():
                         cFp_data['usedRoleDir'] = cur_active_role_dict_1['path']
                         if write_2nd_role:
                             cFp_data['roleName2'] = cur_active_role_dict_2['name']
-                            cFp_data['usedRole2Dir'] = cur_active_role_dict_2['path']
+                            cFp_data['usedRoleDir2'] = cur_active_role_dict_2['path']
                         store_updated_cfp_json = True
         elif arguments['build']:
             cur_active_role = cFp_data[__sra_key__]['active_role']
@@ -396,6 +396,20 @@ def main():
         cFp_data[__sra_key__]['version'] = __version__
         with open(cfp_json_file, 'w') as json_file:
             json.dump(cFp_data, json_file, indent=4)
+
+    if 'SraToolShowHint' in os.environ:
+        if os.environ['SraToolShowHint'] == "True" and not 'SraToolHintWasShown' in os.environ:
+            srat_fyi = "\npsst...just FYI: If you want to use the new 'sra' command without typing always " \
+               "'./' first, \nyou can add the following to your '~/.bashrc' and activate it with 'source ~/.bashrc' " \
+               "afterwards:\n"
+            srat_bashrc = '--------------\n' \
+                  'srafunc(){\n\tcur_pwd=$(pwd)\n\tsrat=$cur_pwd/sra\n\tif [ -f "$srat" ]; then\n\t\t$srat $@\n\telse' \
+                  '\n\t\techo "Error: No cloudFPGA sra tools present in this folder.\n\tfi\n}\n\nalias sra=srafunc\n' \
+                  '--------------\n'
+            print(srat_fyi + srat_bashrc)
+            os.system('cd {}/env; echo -e "export SraToolHintWasShown=1\n" >> this_machine_env.sh'
+                      .format(cfp_root))
+
     return
 
 

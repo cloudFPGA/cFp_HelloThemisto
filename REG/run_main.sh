@@ -46,7 +46,7 @@ source $cFpRootDir/env/setenv.sh
 export XILINXD_LICENSE_FILE=2100@pokwinlic1.pok.ibm.com:2100@pokwinlic2.pok.ibm.com:2100@pokwinlic3.pok.ibm.com
 
 # finally, we need to exchange the Makefiles
-cp -f $cFpRootDir/REG/Makefile $cFpRootDir/TOP/tcl/Makefile
+#cp -f $cFpRootDir/REG/Makefile $cFpRootDir/TOP/tcl/Makefile
 
 retval=1
 

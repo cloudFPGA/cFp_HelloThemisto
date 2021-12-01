@@ -38,7 +38,7 @@ MONO_LOCK =$(cFpXprDir)/.project_monolithic.stamp
 
 CLEAN_TYPES = *.log *.jou *.str
 
-VEIRFY_RETVAL=47
+VERIFY_RETVAL=47
 
 .PHONY: all clean full_src full_src_pr pr_verify full_src_pr_all monolithic monolithic_incr save_mono_incr 
 .PHONY: finalcmd incrcmd onlycmd basecmd monobasecmd monofinalcmd
@@ -60,7 +60,7 @@ basecmd:
 
 finalcmd:
 	@#more +2 .vivado_basecmd.sh
-	@/bin/echo -e '\n\n\n\n\n\n\n\nfi\nretVal=$$?\necho "handle_vivado.tcl returned with $$retVal"\nif [ $$retVal -ne $(VEIRFY_RETVAL) ]; then\n  echo "\n\tERROR: handle_vivado.tcl finished with an unexpected value!"\n  exit -1\nelse\n  retVal=0\nfi\n\ndate > end.date\nexit $$retVal' >> .vivado_basecmd.sh
+	@/bin/echo -e '\n\n\n\n\n\n\n\nfi\nretVal=$$?\nif [ $$retVal -ne $(VERIFY_RETVAL) ]; then\n  echo "\n\tERROR: handle_vivado.tcl finished with an unexpected value!"\n  exit -1\nelse\n  retVal=0\nfi\n\ndate > end.date\nexit $$retVal' >> .vivado_basecmd.sh
 	@bash .vivado_basecmd.sh
 	@rm .vivado_basecmd.sh
 
@@ -118,7 +118,7 @@ monobasecmd: basecmd
 
 monofinalcmd: 
 	@#more +2 .vivado_basecmd.sh
-	@/bin/echo -e '\n\n\n\n\n\n\n\nfi\nretVal=$$?\necho "handle_vivado.tcl returned with $$retVal"\nif [ $$retVal -ne $(VEIRFY_RETVAL) ]; then\n  echo "\n\tERROR: handle_vivado.tcl finished with an unexpected value!"\n  exit -1\nelse\n  retVal=0\nfi\n\ndate > end.date' >> .vivado_basecmd.sh
+	@/bin/echo -e '\n\n\n\n\n\n\n\nfi\nretVal=$$?\nif [ $$retVal -ne $(VEIRFY_RETVAL) ]; then\n  echo "\n\tERROR: handle_vivado.tcl finished with an unexpected value!"\n  exit -1\nelse\n  retVal=0\nfi\n\ndate > end.date' >> .vivado_basecmd.sh
 	@/bin/echo -e "echo \"last monolithic build was successfull at \" > $(MONO_LOCK)" >> .vivado_basecmd.sh
 	@/bin/echo -e "date  >> $(MONO_LOCK)" >> .vivado_basecmd.sh
 	@/bin/echo -e 'exit $$retVal' >> .vivado_basecmd.sh

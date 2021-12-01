@@ -89,7 +89,7 @@ $ ls -al dcps/
 
 ## ### getting latest Shell manually
 
-1. Go to the CFRM and to the API call `GET /composablelogic/py_shell/` , and ask for `Themisto`.
+1. Go to the CFRM and to the API call `GET /composablelogic/by_shell/` , and ask for `Themisto`.
 
 2. pick the newest entry in the returned list (i.e. the highest `id`)
 

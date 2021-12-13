@@ -1,11 +1,37 @@
-# cFp_Triangle
-cloudFPGA project (cFp) for a triangle communication example
+# cFp_HelloThemisto
+A *Hello world* project built on the basis of the **Themisto** shell.
 
-**Idea**:
+## Description of the Project
+In a cloudFPGA system, a user application is referred to as a **ROLE** and is integrated 
+along with a **SHELL** that abstracts the hardware components of the FPGA module. 
+The combination of a specific ROLE and its associated SHELL into a toplevel design is
+referred to as a **Shell-Role-Architecture (SRA)**. 
+
+This project exemplifies the generation of partial bitstreams for a cluster of FPGAs.
+The idea is to build a communication ring between a host CPU and two FPGAs as depicted
+in the following scenario.
 ```
-   CPU  (... -->  FPGA ... ) -->  FPGA 
-    /\_____________________________|
+        +---> CPU --->--- FPGA --->--- FPGA --->---+ 
+        |                                          |
+        +------<------------<------------<---------+
 ```
+
+## How to build the project
+
+#### Step-1: Clone and Configure the project
+```
+$ git clone -recurse-submodules git@github.com:cloudFPGA/cFp_HelloThemisto.git
+$ cd cFp_HelloThemisto
+```
+
+#### Step-2: TODO
+The current directory contains a _Makefile_ which handles all the required steps to generate 
+a _bitfile_ (a.k.a bitstream). 
+
+During the build, both SHELL and ROLE dependencies are analyzed to solely re-compile and 
+re-synthesize the components that must be recreated.
+
+
 
 All communication goes over the *UDP/TCP port 2718*. Hence, the CPU should run:
 ```bash

@@ -20,8 +20,10 @@ in the following scenario.
 
 #### Step-1: Clone and Configure the project
 ```
-$ git clone -recurse-submodules git@github.com:cloudFPGA/cFp_HelloThemisto.git
-$ cd cFp_HelloThemisto
+$ git clone -recursive git@github.com:cloudFPGA/cFp_HelloThemisto.git
+$ cd cFp_HelloThemisto/cFDK
+$ git checkout main
+$ cd ..
 ```
 
 #### Step-2: TODO

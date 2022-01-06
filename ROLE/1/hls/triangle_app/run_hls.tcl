@@ -1,6 +1,21 @@
+# *
+# * Copyright 2016 -- 2022 IBM Corporation
+# *
+# * Licensed under the Apache License, Version 2.0 (the "License");
+# * you may not use this file except in compliance with the License.
+# * You may obtain a copy of the License at
+# *
+# *     http://www.apache.org/licenses/LICENSE-2.0
+# *
+# * Unless required by applicable law or agreed to in writing, software
+# * distributed under the License is distributed on an "AS IS" BASIS,
+# * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# * See the License for the specific language governing permissions and
+# * limitations under the License.
+# *
+
 # *****************************************************************************
 # *                            cloudFPGA
-# *            All rights reserved -- Property of IBM
 # *----------------------------------------------------------------------------
 # * Created : Sep 2018
 # * Authors : Francois Abel  
@@ -14,10 +29,6 @@
 # * Reference documents:
 # *  - UG902 / Ch.4 / High-Level Synthesis Reference Guide.
 # *
-# *-----------------------------------------------------------------------------
-# * Modification History:
-# *  Fab: Jan-18-2018 Adds header and environment variables.
-# *  Fab: Feb-15-2018 Changed the export procedure.
 # ******************************************************************************
 
 # User defined settings

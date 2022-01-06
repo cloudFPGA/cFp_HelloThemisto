@@ -1,12 +1,27 @@
+# *
+# * Copyright 2016 -- 2022 IBM Corporation
+# *
+# * Licensed under the Apache License, Version 2.0 (the "License");
+# * you may not use this file except in compliance with the License.
+# * You may obtain a copy of the License at
+# *
+# *     http://www.apache.org/licenses/LICENSE-2.0
+# *
+# * Unless required by applicable law or agreed to in writing, software
+# * distributed under the License is distributed on an "AS IS" BASIS,
+# * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# * See the License for the specific language governing permissions and
+# * limitations under the License.
+# *
+
 # *****************************************************************************
 # *                            cloudFPGA
-# *            All rights reserved -- Property of IBM
 # *----------------------------------------------------------------------------
 # * Created : Sep 2018
 # * Authors : Francois Abel
-# * 
+# *
 # * Description : A Tcl script that generates all the IP cores instanciated by 
-# *   this FLASH version of the FMKU60 ROLE.
+# *   this ROLE.
 # * 
 # * Synopsis : vivado -mode batch -source <this_file> -notrace
 # *                             [ -log    <log_file_name>        ]
@@ -26,10 +41,6 @@
 # *  - UG896 / Ch.3 / Using Manage IP Projects.
 # *  - UG896 / Ch.2 / IP Basics.
 # *  - UG896 / Ch.6 / Tcl Commands for Common IP Operations.
-# *-----------------------------------------------------------------------------
-# * Modification History:
-# *  Fab: Feb-07-2018 Created from former 'create_project.tcl'.
-# *  Fab: Sep-14-2018 Created from the SHELL version of this script.
 # ******************************************************************************
 
 package require cmdline
@@ -430,9 +441,4 @@ my_puts "#######################################################################
 close_project
 
 exit ${nrErrors}
-
-
-
-
-
 

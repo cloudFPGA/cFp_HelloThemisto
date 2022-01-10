@@ -24,6 +24,7 @@
 #  *        TCL file to execute the Vivado commands
 #  *
 
+
 package require cmdline
 
 # Set the Global Settings used by the SHELL Project
@@ -411,8 +412,6 @@ if { ${create} } {
         
         # Add Constraints Files SHELL
         #---------------------------------------------------------------------------
-        #OBSOLETE add_files -fileset constrs_1 -norecurse [ glob ${rootDir}/../../SHELL/${usedShellType}/xdc/*.xdc ]
-        
         my_dbg_trace "Done with the import of the SHELL Source files" ${dbgLvl_1}
 
     } else {

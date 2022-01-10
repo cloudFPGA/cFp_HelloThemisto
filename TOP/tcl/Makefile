@@ -135,7 +135,6 @@ monolithic_proj: basecmd
 	@/bin/echo -e "date  >> $(MONO_LOCK)" >> .vivado_basecmd.sh
 	@bash .vivado_basecmd.sh
 	@rm .vivado_basecmd.sh
-	
 
 monolithic_incr: monobasecmd $(MONO_LOCK) incrcmd monofinalcmd
 

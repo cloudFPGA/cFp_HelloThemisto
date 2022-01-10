@@ -113,16 +113,16 @@ $(cFpRootDir)/dcps/3_top$(cFpMOD)_STATIC.json:
 	@echo "Shell dcp missing, please run './sra update-shell'"
 	@exit 1
 
-$(cFpRootDir)/dcps/.enc_ip_guard: $(cFpRootDir)/dcps/3_top$(cFpMOD)_STATIC.json | $(cFpRootDir)/dcps/
-	@./cFDK/SRA/LIB/bash/assert_envs.sh
-	$(MAKE) -C $(SHELL_DIR) enc_ips
-	@touch $@
+#$(cFpRootDir)/dcps/.enc_ip_guard: $(cFpRootDir)/dcps/3_top$(cFpMOD)_STATIC.json | $(cFpRootDir)/dcps/
+#	@./cFDK/SRA/LIB/bash/assert_envs.sh
+#	$(MAKE) -C $(SHELL_DIR) enc_ips
+#	@touch $@
 
 
-pr_only: ensureNotMonolithic $(cFpRootDir)/dcps/.enc_ip_guard Role | xpr ## Building partial bitifle for Role 1 (if Shell.dcp is present)
+pr_only: ensureNotMonolithic Role | xpr ## Building partial bitifle for Role 1 (if Shell.dcp is present)
 	$(MAKE) -C ./TOP/tcl/ full_src_pr_only
 
-pr2_only: ensureNotMonolithic $(cFpRootDir)/dcps/.enc_ip_guard Role2 | xpr ## Building partial bitifle for Role 2 (if Shell.dcp is present)
+pr2_only: ensureNotMonolithic Role2 | xpr ## Building partial bitifle for Role 2 (if Shell.dcp is present)
 	$(MAKE) -C ./TOP/tcl/ full_src_pr_2_only
 
 #pr_incr_only: ensureNotMonolithic Role  | xpr

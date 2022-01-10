@@ -51,33 +51,6 @@ assert_env:
 
 # (end of cFa placeholder)
 
-# --- Middleware ---
-MIDLW_DIR =$(cFpRootDir)/cFDK/SRA/LIB/MIDLW/$(cFpSRAtype)/ #TODO
-.PHONY: MidlwSrc MidlwPr MidlwDummy MidlwSrcTrue MidlwPrTrue
-
-# conditional switch
-ifdef cFpMidlwIpDir
-MidlwSrc: MidlwSrcTrue
-
-MidlwPr: MidlwPrTrue
-
-else 
-MidlwSrc: MidlwDummy
-
-MidlwPr: MidlwDummy
-endif
-
-
-MidlwDummy:
-	@echo "No Middleware configured"
-
-MidlwSrcTrue: assert_env
-	$(MAKE) -C $(MIDLW_DIR)
-
-MidlwPrTrue: assert_env
-	$(MAKE) -C $(MIDLW_DIR) MIDLW_$(cFpSRAtype)_OOC.dcp
-
-
 # --- default Makefile ---
 
 Role: assert_env
@@ -99,16 +72,16 @@ RoleIp2: assert_env
 ShellSrc: assert_env
 	$(MAKE) -C $(SHELL_DIR) 
 
-pr: ensureNotMonolithic ShellSrc MidlwPr Role  | xpr  ## Builds Shell (if necessary) and first Role only using PR flow (default)
+pr: ensureNotMonolithic ShellSrc Role  | xpr  ## Builds Shell (if necessary) and first Role only using PR flow (default)
 	$(MAKE) -C ./TOP/tcl/ full_src_pr
 
-pr2: ensureNotMonolithic ShellSrc MidlwPr Role2 | xpr ## Builds Shell (if necessary) and second Role only using PR flow
+pr2: ensureNotMonolithic ShellSrc Role2 | xpr ## Builds Shell (if necessary) and second Role only using PR flow
 	$(MAKE) -C ./TOP/tcl/ full_src_pr_2
 
-pr_full: ensureNotMonolithic ShellSrc MidlwPr Role Role2 | xpr ## Builds Shell (if necessary) and both Roles using PR flow
+pr_full: ensureNotMonolithic ShellSrc Role Role2 | xpr ## Builds Shell (if necessary) and both Roles using PR flow
 	$(MAKE) -C ./TOP/tcl/ full_src_pr_all
 
-pr_flash: ensureNotMonolithic ShellSrc MidlwPr Role  | xpr  ## Builds Shell (if necessary) and first Role using PR flow and generate flash file
+pr_flash: ensureNotMonolithic ShellSrc Role  | xpr  ## Builds Shell (if necessary) and first Role using PR flow and generate flash file
 	$(MAKE) -C ./TOP/tcl/ full_src_pr_flash
 
 #pr_debug: ensureNotMonolithic ensureDebugNets ShellSrc Role  | xpr  # Builds Shell (if necessary) and first Role only using PR flow including debug probes for the Shell
@@ -133,10 +106,23 @@ pr_full_debug: ## Builds Shell (if necessary) and both Roles using PR flow inclu
 #pr_full_incr: ensureNotMonolithic ShellSrc Role Role2 | xpr
 #	export usedRole=$(USED_ROLE); export usedRole2=$(USED_ROLE_2); $(MAKE) -C ./TOP/tcl/ full_src_pr_all_incr
 
-pr_only: ensureNotMonolithic Role  | xpr ## Building partial bitifle for Role 1 (if Shell.dcp is present)
+$(cFpRootDir)/dcps/:
+	mkdir -p $(cFpRootDir)/dcps/
+
+$(cFpRootDir)/dcps/3_top$(cFpMOD)_STATIC.json:
+	@echo "Shell dcp missing, please run './sra update-shell'"
+	@exit 1
+
+$(cFpRootDir)/dcps/.enc_ip_guard: $(cFpRootDir)/dcps/3_top$(cFpMOD)_STATIC.json | $(cFpRootDir)/dcps/
+	@./cFDK/SRA/LIB/bash/assert_envs.sh
+	$(MAKE) -C $(SHELL_DIR) enc_ips
+	@touch $@
+
+
+pr_only: ensureNotMonolithic $(cFpRootDir)/dcps/.enc_ip_guard Role | xpr ## Building partial bitifle for Role 1 (if Shell.dcp is present)
 	$(MAKE) -C ./TOP/tcl/ full_src_pr_only
 
-pr2_only: ensureNotMonolithic Role2 | xpr ## Building partial bitifle for Role 2 (if Shell.dcp is present)
+pr2_only: ensureNotMonolithic $(cFpRootDir)/dcps/.enc_ip_guard Role2 | xpr ## Building partial bitifle for Role 2 (if Shell.dcp is present)
 	$(MAKE) -C ./TOP/tcl/ full_src_pr_2_only
 
 #pr_incr_only: ensureNotMonolithic Role  | xpr
@@ -147,21 +133,21 @@ pr2_only: ensureNotMonolithic Role2 | xpr ## Building partial bitifle for Role 2
 #	export usedRole=$(USED_ROLE); export usedRole2=$(USED_ROLE_2); $(MAKE) -C ./TOP/tcl/ full_src_pr_2_incr_only
 
 #no ROLE, because Role is synthezied with sources!
-monolithic: ensureMonolithic ShellSrc MidlwSrc RoleIp | xpr  ## Default build when PR is not used.
+monolithic: ensureMonolithic ShellSrc RoleIp | xpr  ## Default build when PR is not used.
 	@echo "this project was startet without Black Box flow => until you clean up, there is no other flow possible" > ./xpr/.project_monolithic.lock
 	@#export usedRole=$(USED_ROLE); cd tcl; vivado -mode batch -source handle_vivado.tcl -notrace -log handle_vivado.log -tclargs -full_src -force -forceWithoutBB -role -create -synth -impl -bitgen
 	$(MAKE) -C ./TOP/tcl/ monolithic
 
 #no ROLE, because Role is synthezied with sources!
-monolithic_incr: ensureMonolithic ShellSrc MidlwSrc RoleIp | xpr  ## Default incremental build.
+monolithic_incr: ensureMonolithic ShellSrc RoleIp | xpr  ## Default incremental build.
 	@echo "this project was startet without Black Box flow => until you clean up, there is no other flow possible" > ./xpr/.project_monolithic.lock
 	$(MAKE) -C ./TOP/tcl/ monolithic_incr 
 
-monolithic_debug: ensureMonolithic ensureDebugNets ShellSrc MidlwSrc RoleIp | xpr   ## Default build to include a debug probe.
+monolithic_debug: ensureMonolithic ensureDebugNets ShellSrc RoleIp | xpr   ## Default build to include a debug probe.
 	@echo "this project was startet without Black Box flow => until you clean up, there is no other flow possible" > ./xpr/.project_monolithic.lock
 	$(MAKE) -C ./TOP/tcl/ monolithic_debug
 
-monolithic_incr_debug: ensureMonolithic ensureDebugNets ShellSrc MidlwSrc RoleIp | xpr   ## Default incremental build to include a debug probe..
+monolithic_incr_debug: ensureMonolithic ensureDebugNets ShellSrc RoleIp | xpr   ## Default incremental build to include a debug probe..
 	@echo "this project was startet without Black Box flow => until you clean up, there is no other flow possible" > ./xpr/.project_monolithic.lock
 	$(MAKE) -C ./TOP/tcl/ monolithic_incr_debug
 

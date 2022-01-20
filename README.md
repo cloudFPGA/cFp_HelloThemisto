@@ -181,7 +181,7 @@ Before we can deploy this cluster consisting of one CPU and two FPGAs, we first 
 newly generated PR bitfiles of our two roles. The below step-8a and step-8b cover the two possible 
 options for uploading these bitstreams.  
 
-Step-8a: Upload images with the GUI-API
+#### Step-8a: Upload images with the GUI-API
 
 The cloudFPGA resource manager provides a web-based graphical user interface to its API. It is 
 available as a [Swagger UI](https://swagger.io/tools/swagger-ui/) at 
@@ -196,11 +196,11 @@ as exemplified below.
 Next, scroll down to the "*Response body* section of the server and write down the image `id` for
 use in the next step.
 
-![Swagger-Images-Post-Upload-Res](./DOC/imgs/Img-Swagger-Images-POST-Upload-Res.png#center)
+[TODO] ![Swagger-Images-Post-Upload-Res](./DOC/imgs/Img-Swagger-Images-POST-Upload-Res.png#center)
 
 Repeat step-8a for the second bistream called `invertcase_ring_app`.
 
-#### Step-4b: Upload image with the cFSP-API
+#### Step-8b: Upload image with the cFSP-API
 
 [TODO] 
 

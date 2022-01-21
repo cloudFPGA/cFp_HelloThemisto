@@ -54,7 +54,6 @@ figure. It consists of:
 
 ![Block diagram of the HelloThemistoTop](./DOC/imgs/Fig-TOP-HelloThemisto.png#center)
 <p align="center">Toplevel block diagram of the cFp_HelloThemisto project</p>
-<br>
 
 ## How to build the project
 
@@ -68,7 +67,7 @@ must be recreated.
 
 :Info/Warning: To generate the FPGA binary streams for this example cluster on your computer, you must be authorized to access the cloudFPGA infrastructure via VPN. This requires a cloudFPGA account that can be requested [here](https://github.com/cloudFPGA/Doc/tree/master/imgs/COMING_SOON.md).
 
-#### Step-1: Clone and configure the project
+### Step-1: Clone and configure the project
 ```
   $ cd ${SANDBOX}
   $ git clone --recursive git@github.com:cloudFPGA/cFp_HelloThemisto.git
@@ -124,9 +123,9 @@ the command:
   Current active role: msg-ring-app
 ```
 
-### Step-6: Generate partial bitstream for the 1st role
+### Step-6: Generate a partial bitstream for the 1st role
 
-Generate a partial bitstream for the role `msg-ring-app`with the command:
+Generate a partial bitstream for the role `msg-ring-app` with the command:
 
 ```
     $ ./sra build pr
@@ -175,60 +174,119 @@ After another ~40 minutes, the following files will be added to the `./dcps` dir
 
 ## How to deploy the cluster
 
-### Step-8: Upload the generated bitstreams
+### Step-8: Upload the generated PR bitstreams
 
 Before we can deploy this cluster consisting of one CPU and two FPGAs, we first need to upload the 
-newly generated PR bitfiles of our two roles. The below step-8a and step-8b cover the two possible 
-options for uploading these bitstreams.  
+newly generated PR bitfiles of our two roles. We refer to such PR bitfiles as *application image*
+or **app_image** for short. The below step-8a and step-8b cover the two possible options for 
+uploading these two generated application images.  
 
-#### Step-8a: Upload images with the GUI-API
+#### Step-8a: Upload the application images with the GUI-API
 
 The cloudFPGA resource manager provides a web-based graphical user interface to its API. It is 
 available as a [Swagger UI](https://swagger.io/tools/swagger-ui/) at 
 ```http://10.12.0.132:8080/ui/#/```.
 
-To upload your generated bitstreams, expand the Swagger menu *Images* and the operation
-`[POST] /images/app_logic - Upload an image of type app_logic`. Then, fill in the requested fields 
-as exemplified below.
-
+To upload the *app_image* corresponding to the role `msg-ring-app`, expand the Swagger menu 
+**Images** and the operation `[POST] /images/app_logic - Upload an image of type app_logic`. 
+Then, fill in the fields 1 to 6 as exemplified below:
+  1) with your **username** for accessing the cloudFPGA infrastructure
+  2) with your **password**
+  3) with specific **image_details** about the *app_image* to upload
+     * INFO: You must submit this information in a dictionary format, similar to the following example:
+       ```
+           { 
+             "cl_id"      : "2",
+             "fpga_board" : "FMKU60",
+             "shell_type" : "Themisto",
+             "comment"    : "The 1st app_image (msg-ring-app)"  
+           }
+       ```
+     * **WARNING**: The "cl_id" field stands for _composable_logic_id_ and its value **MUST BE THE SAME** as the `id` specified in the `dcps/3_topFMKU60_STATIC.json` file **!!**
+  4) with the **image_file.bin** corresponding to the partial bitfile of the 1st role
+     * With respect to the `msg-ring-app` example --> `4_topFMKU60_impl_msg-ring-app_pblock_ROLE_partial.bin`
+  5) with the **signature_file.bin.sig** corresponding to the current _imagefile.bin_    
+     * With respect to the `msg-ring-app` example --> `4_topFMKU60_impl_msg-ring-app_pblock_ROLE_partial.bin.sig` 
+  6) with the **pr_verify.rpt** file containing the output of *pr_verify* command for this build.
+     * With respect to the `msg-ring-app` example --> `4_topFMKU60_impl_msg-ring-app_pblock_ROLE_partial.rpt`
+  
 ![Swagger-Images-Post-Upload-Req](./DOC/imgs/Img-Swagger-Images-POST-Upload-Req.png#center)
 
-Next, scroll down to the "*Response body* section of the server and write down the image `id` for
+Next, scroll down to the *Response body* section of the server and write down the image `id` for
 use in the next step.
 
-[TODO] ![Swagger-Images-Post-Upload-Res](./DOC/imgs/Img-Swagger-Images-POST-Upload-Res.png#center)
+![Swagger-Images-Post-Upload-Res](./DOC/imgs/Img-Swagger-Images-POST-Upload-Res.png#center)
 
 Repeat step-8a for the second bistream called `invertcase_ring_app`.
 
 #### Step-8b: Upload image with the cFSP-API
 
-[TODO] 
+The second option for uploading a PR bitstream is based on a command-line interface to the cFRM API.
+This method is provided by the **cloudFPGA Support Package** (cFSP) which must be installed
+beforehand as described [here](https://github.com/cloudFPGA/cFSP).
+
+If cFSP is installed, you can upload the generated PR bitstreams
+```${SANDBOX}/cFp_HelloThemisto/dcps/4_topFMKU60_impl_msg-ring-app_pblock_ROLE_partial.bin``` and 
+```${SANDBOX}/cFp_HelloThemisto/dcps/4_topFMKU60_impl_invertcase-ring-app_pblock_ROLE_partial.bin``` 
+with the following two commands:
+```
+    $ ./cfsp image post-app-logic --image_file=${SANDBOX}/cFp_HelloThemisto/dcps/4_topFMKU60_impl_msg-ring-app_pblock_ROLE_partial.bin
+    $ ./cfsp image post-app-logic --image_file=${SANDBOX}/cFp_HelloThemisto/dcps/4_topFMKU60_impl_invercase-ring-app_pblock_ROLE_partial.bin
+```
+Similarly to the GUI-API procedure, do not forget to write down the two image "*id*" returned by
+the server.
+
+![cFSP-Image-Post-Upload-Res](https://raw.githubusercontent.com/cloudFPGA/cFSP/master/doc/img/4b.png#center)
 
 ### Step-9: Request a cloudFPGA cluster and deploy it
 
 Now that your FPGA images have been uploaded to the cFRM, you can request a cloudFPGA cluster to
-be programmed and deployed with them. The below step-9a and step-9b will cover the two offered
+be programmed and deployed with your images. The below step-9a and step-9b will cover the two available 
 options for creating a new cF cluster.
 
 #### Step-9a: Create a cluster with the GUI-API
 
 To create a new cluster via the GUI-API, point your web browser at
-```http://10.12.0.132:8080/ui/#/```
+```http://10.12.0.132:8080/ui/#/``` and expand the *Swagger* operation 
+`[POST] /clusters - Request a cluster` of the menu `Clusters`.
 
-Expand the *Swagger* menu `Clusters` and the operation
-`[POST] /clusters - Request a cluster`. Then, provide username, password, project name and the 
-details of the cluster as exemplified below.
+Then, fill in the fields 1 to 4 as exemplified below:
+1) with your **username** for accessing the cloudFPGA infrastructure
+2) with your **password**
+3) with the name of the **OpenStack project** to use (if you own multiple projects), otherwise leave the field setting to "*default*". 
+4) with specific **cluster_details** about the mapping of node-IDs to images
+   * INFO: You must submit this information in a dictionary format similar to the following example (note that the CPU is not provided with an *image_id* and is flagged as "NON_FPGA" instead):
+     ```
+     [
+       {
+         "image_id" : "<the-image-id-retrived-at-step-8a>",  # E.g. "7891e291-8847-4302-9b07-248c4feefd69"
+         "node_id"  : 1
+       },{
+         "image_id" : "<the-image-id-retrived-at-step-8a>",  # E.g. "f23b8025-7beb-4662-8d73-30563593ffbe"
+         "node_id"  : 2
+       },{
+         "image_id" : "NON_FPGA",
+         "node_ip"  : "<the-floating-ip-of-your-VM>",        # E.g. "10.12.2.53"
+         "node_id"  : 0
+       }
+     ]
+     ```
 
-[TODO] ![Swagger-Instances-Post-Create-Req](./DOC/imgs/Img-Swagger-Clusters-POST-Create-Req.png#center)
+![Swagger-Clusters-Post-Request-Req](./DOC/imgs/Img-Swagger-Clusters-POST-Request-Req.png#center)
 
 Next, scroll down to the server's response and write down the two "*role_ip*" addresses for later 
 accessing your FPGA instances.
 
-[TODO] ![Swagger-Instances-Post-Create-Res](./DOC/imgs/Img-Swagger-Clusters-POST-Create-Res.png#center)
+![Swagger-Instances-Post-Request-Res](./DOC/imgs/Img-Swagger-Clusters-POST-Request-Res.png#center)
 
 #### Step-9b: Create a cluster with the cFSP-API
 
-[TODO]
+To create a similar cluster via the cFSP-API, enter the following command:
+```
+    $ ./cfsp cluster post --image_id=7891e291-8847-4302-9b07-248c4feefd69 --image_id=f23b8025-7beb-4662-8d73-30563593ffbe  --node_ip=10.12.2.53
+```
+Next, and similarly to the GUI-API procedure, do not forget to write down the two "*role_ip*" 
+returned by the server.
 
 ### Step-10: How to test the deployed cluster
 
@@ -253,7 +311,9 @@ Terminal 2 - Set `nc` in TCP listen mode
 ```
 
 You can now type in some text in the 1st terminal, and this text should be echoed back with all its
-characters inverted in the 2nd terminal.
+characters inverted in the 2nd terminal as the following example shows.
+
+![Demo-of-the cFp_HelloThemisto project](./DOC/imgs/Img-HelloThemisto-Demo.JPG)
 
 :Info: Some firewalls may block network packets if there is not a connection to the remote machine/port. Hence, to get the *HelloThemisto* example to work, the following commands may be necessary to be executed (as root):
 ```
@@ -265,7 +325,7 @@ characters inverted in the 2nd terminal.
 ### Step-11: For further experiments
 
 Now that your cluster with one CPU and two FPGAs is operational, you may want to try and deploy a 
-larger cluster at step-9 or extend the current cluster with the 
+larger cluster at step-9 or extend the size of the current cluster with the 
 `[PUT] /clusters/{cluster_id}/extend - Add nodes to an existing cluster` menu of the GUI-API.
 
 Depending on the combination of `msg-ring-app` and `invertcase-ring-app` roles in your extended 

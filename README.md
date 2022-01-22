@@ -1,9 +1,16 @@
 # cFp_HelloThemisto
-A *Hello world* project built upon the shell **Themisto**.
+
+A cloudFPGA project built upon the shell **Themisto**.
+
+| :information_source: | The cloudFPGA documentation is available at [https://cloudfpga.github.io/Doc](https://cloudfpga.github.io/Doc/pages/INTRODUCTION/introduction.html)  |
+|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
 
 ## Overview
 
-This project builds on the shell [Themisto](https://github.com/cloudFPGA/cFDK/blob/main/DOC/Themisto.md)
+The integration of a user application and a cloudFPGA shell into a top-level design is what 
+constitutes a [cloudFPGA project](https://cloudfpga.github.io/Doc/pages/PROJECTS/cfprojects.html#).
+
+This *Hello world* project builds on the shell [Themisto](https://github.com/cloudFPGA/cFDK/blob/main/DOC/Themisto.md)
 which is a shell with enhanced routing support for node-to-node communications. It exemplifies
 the creation of a cluster consisting of one CPU and two FPGAs organized in a ring 
 topology.
@@ -16,18 +23,18 @@ ring, sends the data back to the VM after applying its own processing.
 
 ![Setup-of-the cFp_HelloThemisto project](./DOC/imgs/Fig-HelloThemisto-Setup.png)
 
-**Info/Note**
-- The shell [Themisto](https://github.com/cloudFPGA/cFDK/blob/main/DOC/Themisto.md) uses the
-  concept of *MPI communicator* in which each cloudFPGA role application is assigned a unique 
-  number to identify itself. This number is called the `node_rank` (or `rank` for short). It does 
-  not change once the cluster is created and its value always ranges from 0 to *cluster-size-1*.
-- The two FPGA applications of this project leverage both their `node_rank` and the `cluster_size`
-  to determine the address of the next node in the following manner: 
+The shell [Themisto](https://github.com/cloudFPGA/cFDK/blob/main/DOC/Themisto.md) uses the
+concept of *MPI communicator* in which each cloudFPGA role application is assigned a unique 
+number to identify itself. This number is called the `node_rank` (or `rank` for short), its value 
+always ranges from 0 to *cluster-size-1* and that value does not change once the cluster is created.
+
+The two FPGA applications of this project leverage both their `node_rank` and the `cluster_size`
+to determine the address of the next node in the following manner: 
   ```
       next_node_rank = (curr_node_rank + 1) % cluster_size
   ```
-  As a result, the rudimentary size of the proposed ring-based cluster can be extended by simply 
-  inserting more such FPGA application nodes into the ring.
+As a result, the rudimentary size of the proposed ring-based cluster can be extended by simply 
+inserting more such FPGA application nodes into the ring.
 
 ## Shell-Role-Architecture
 In **cloudFPGA** (cF), a user application is referred to as a **ROLE** and is integrated

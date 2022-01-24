@@ -77,10 +77,14 @@ must be recreated.
 ### Step-1: Clone and configure the project
 ```
   $ cd ${SANDBOX}
-  $ git clone --recursive git@github.com:cloudFPGA/cFp_HelloThemisto.git
+  $ git clone --recursive https://github.com:cloudFPGA/cFp_HelloThemisto.git
   $ cd cFp_HelloThemisto/cFDK
   $ git checkout main
   $ cd ..
+```
+:information_source: If you have a GitHub account and SSH keys set up, you may clone with:
+```
+    $ git clone --recursive git@github.com:cloudFPGA/cFp_HelloThemisto.git
 ```
 
 ### Step-2: Setup your environment

@@ -82,8 +82,11 @@ must be recreated.
 ### Step-1: Clone and configure the project
 ```
   $ cd ${SANDBOX}
-  
+
   $ git clone --recursive git@github.com:cloudFPGA/cFp_HelloThemisto.git
+      (if you don't have a GitHub account and/or SSH keys set up, use the command: 
+       git clone --recursive https://github.com/cloudFPGA/cFp_HelloThemisto.git)
+  
   $ cd cFp_HelloThemisto/cFDK
   $ git checkout main
   $ cd ..
@@ -94,62 +97,57 @@ must be recreated.
     $ cd ${SANDBOX}/cFp_HelloThemisto
     $ source env/setenv.sh
 ```
+
 ### Step-3: Add your cloudFPGA credentials
 
 Create a file called `user.json` and add your cloudFPGA credentials in it. The credentials 
 consist of the `username`, the `password` and the `projectname` that were provided to you when 
 you registered.
-
 ```
   $ echo "{\"credentials\": {\"user\": \"YOUR_USERNAME\", \"pw\": \"YOUR_PASSWORD\" }, \"project\": \"YOUR_PROJECTNAME\"}" > user.json
 ```
 
-### Step-4: Retrieve the latest shell
+### Step-4: Retrieve the latest static shell
 
 Use the command `./sra update-shell` to download the latest DCP shell from the *cloudFPGA Resource 
 Manager* (cFRM).
 ```
-  $ ./sra update-shell
+  $ cd ${SANDBOX}/cFp_HelloThemisto
   
+  $ ./sra update-shell
   [cFBuild] Updated dcp of Shell 'Themisto' to latest version (2) successfully. DONE.
-        (downloaded dcp to ${SANDBOX}/cFp_HelloThemisto/dcps/3_topFMKU60_STATIC.dcp)
+      (downloaded dcp to ${SANDBOX}/cFp_HelloThemisto/dcps/3_topFMKU60_STATIC.dcp)
 ```
 
-### Step-5: Activate the 1st role (optional)
+### Step-5: Activate the 1st role (optional) and generate corresponding partial bitstream
 
 This project contains two roles but only one role can be active at a time. So we need to specify 
 the current active role to build and implicitly deactivate the other one. This step is optional if 
 you just cloned this project because the default active role is already set to `msg-ring-app`. 
 ```
+  $ cd ${SANDBOX}/cFp_HelloThemisto
+  
   $ ./sra config use-role "msg-ring-app"
 ```
-
-You can check the currently active role as well as the list of defined roles for this project with
-the command:
-
-```
-  $ ./sra config show
-  
-  [sra:INFO] The following roles are currently defined:
-  Role msg-ring-app in directory ${SANDBOX}/cFp_HelloThemisto/ROLE/1
-  Role invertcase-ring-app in directory ${SANDBOX}/cFp_HelloThemisto/ROLE/2
-  Current active role: msg-ring-app
-```
-
-### Step-6: Generate a partial bitstream for the 1st role
-
-Generate a partial bitstream for the role `msg-ring-app` with the command:
-
-```
-    $ ./sra build pr
-```
-
-After ~40 minutes, the generated files will be available in the directory
-`${SANDBOX}/cFp_HelloThemisto/dcps`. The result should look like:
-
+Now, generate a partial bitstream for the current active role (i.e `msg-ring-app`):
 ```
   $ cd ${SANDBOX}/cFp_HelloThemisto
-  $ ls -al dcps/
+  
+  $ ./sra build pr
+```
+The build is successful if you get the following message after ~40 minutes, indicating that a 
+partial bitstream was generated.
+```
+  <cloudFPGA> ################################################################################
+  <cloudFPGA> ##  DONE WITH BITSTREAM GENERATION RUN 
+  <cloudFPGA> ################################################################################
+  <cloudFPGA> End at: HH:MM:SS Day Month Day Year
+```
+You will find this newly created bitstream together with other generated files in the folder 
+`${SANDBOX}/cFp_HelloThemisto/dcps` under the name  
+`4_topFMKU60_impl_msg-ring-app_pblock_ROLE_partial.<bin|sig|bit|rtp>` as shown below: 
+ ```
+  $ ls -al ${SANDBOX}/cFp_HelloThemisto/dcps/
   2_topFMKU60_impl_msg-ring-app_complete_pr.dcp
   3_topFMKU60_STATIC.dcp
   3_topFMKU60_STATIC.json
@@ -162,20 +160,30 @@ After ~40 minutes, the generated files will be available in the directory
   pr_verify.rpt
 ```
 
-### Step-7: Activate and generate the 2nd role
+### Step-6: Activate and generate a partial bitstream for the 2nd role
 
-Set the active role to `invertcase-ring-app` and generate a partial bitstream for this 2nd role.
+You can check the currently active role as well as the list of defined roles for this project with
+the command:
 ```
+  $ cd ${SANDBOX}/cFp_HelloThemisto
+  
+  $ ./sra config show
+  [sra:INFO] The following roles are currently defined:
+  Role msg-ring-app in directory ${SANDBOX}/cFp_HelloThemisto/ROLE/1
+  Role invertcase-ring-app in directory ${SANDBOX}/cFp_HelloThemisto/ROLE/2
+  Current active role: msg-ring-app
+```
+Now select and activate the role `invertcase-ring-app`, and generate a partial bitstream for 
+this 2nd role:
+```
+  $ cd ${SANDBOX}/cFp_HelloThemisto
   $ ./sra config use-role "invertcase-ring-app"
   
   $ ./sra build pr
 ```
-
 After another ~40 minutes, the following files will be added to the `./dcps` directory:
-
 ```
-  $ cd ${SANDBOX}/cFp_HelloThemisto
-  $ ls -al dcps/*invertcase*
+  $ ls -al ${SANDBOX}/cFp_HelloThemisto/dcps/*invertcase*
   2_topFMKU60_impl_invertcase-ring-app_complete_pr.dcp
   4_topFMKU60_impl_invertcase-ring-app_pblock_ROLE_partial.bin
   4_topFMKU60_impl_invertcase-ring-app_pblock_ROLE_partial.bin.sig
@@ -187,14 +195,14 @@ After another ~40 minutes, the following files will be added to the `./dcps` dir
 
 ## How to deploy the cluster
 
-### Step-8: Upload the generated PR bitstreams
+### Step-7: Upload the generated PR bitstreams
 
 Before we can deploy this cluster consisting of one CPU and two FPGAs, we first need to upload the 
 newly generated PR bitfiles of our two roles. We refer to such PR bitfiles as *application image*
-or **app_image** for short. The below step-8a and step-8b cover the two possible options for 
+or **app_image** for short. The below step-7a and step-7b cover the two possible options for 
 uploading these two generated application images.  
 
-#### Step-8a: Upload the application images with the GUI-API
+#### Step-7a: Upload the application images with the GUI-API
 
 The cloudFPGA resource manager provides a web-based graphical user interface to its API. It is 
 available as a [Swagger UI](https://swagger.io/tools/swagger-ui/) at 
@@ -230,34 +238,90 @@ use in the next step.
 
 ![Swagger-Images-Post-Upload-Res](./DOC/imgs/Img-Swagger-Images-POST-Upload-Res.png#center)
 
-Repeat step-8a for the second bistream called `invertcase_ring_app`.
+Repeat step-7a for the second bitstream called `invertcase_ring_app`.
 
-#### Step-8b: Upload image with the cFSP-API
+#### Step-7b: Upload image with the cFSP-API
 
 The second option for uploading a PR bitstream is based on a command-line interface to the cFRM API.
 This method is provided by the **cloudFPGA Support Package** (cFSP) which must be installed
-beforehand as described [here](https://github.com/cloudFPGA/cFSP).
-
-If cFSP is installed, you can upload the generated PR bitstreams
-```${SANDBOX}/cFp_HelloThemisto/dcps/4_topFMKU60_impl_msg-ring-app_pblock_ROLE_partial.bin``` and 
-```${SANDBOX}/cFp_HelloThemisto/dcps/4_topFMKU60_impl_invertcase-ring-app_pblock_ROLE_partial.bin``` 
-with the following two commands:
+beforehand as follows:
 ```
-    $ ./cfsp image post-app-logic --image_file=${SANDBOX}/cFp_HelloThemisto/dcps/4_topFMKU60_impl_msg-ring-app_pblock_ROLE_partial.bin
-    $ ./cfsp image post-app-logic --image_file=${SANDBOX}/cFp_HelloThemisto/dcps/4_topFMKU60_impl_invercase-ring-app_pblock_ROLE_partial.bin
+  $ cd ${SANDBOX}
+   
+  $ git clone https://github.com/cloudFPGA/cFSP.git
+  $ cd cFSP
+  $ which python3     # (we recommend python 3.6 or higher) 
+  /usr/bin/python3
+  $ virtualenv -p /usr/bin/python3 cfenv
+  $ source cfenv/bin/activate
+  $ pip install -r requirements.txt
+``` 
+Once cFSP is installed, add your cloudFPGA credentials. This process creates a file called 
+`user.json` which has your cloudFPGA credentials in it. The credentials consist of the `username`, 
+the `password` and the `projectname` that were provided to you when you registered.
 ```
-Similarly to the GUI-API procedure, do not forget to write down the two image "*id*" returned by
-the server.
+  $ cd ${SANDBOX}/cFSP
+    
+  $ ./cfsp user load --username=<YOUR_USERNAME> --password=<YOUR_PASSWORD> --project=<YOUR_PROJECTNAME>
+    
+  $ ./cfsp user show
+```
+The output of these two commands will look like this:
+```
+  0%|                                                                                                                | 0/1 [00:00<?, ?it/s]INFO: Repeat #0
+  Writing credentials template to ./user.json
+  ['load']
+  100%|██████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00, 3305.20it/s]
+  
+  0%|                                                                                                                | 0/1 [00:00<?, ?it/s]INFO: Repeat #0
+  User     : YOUR_USERNAME
+  Password : YOUR_PASSWORD
+  Project  : YOUR_PROJECTNAME
+  ['show']
+  100%|██████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00, 5801.25it/s]    
+```
+Finally, upload the generated bitstreams located in the `dcps` folder of the 
+`${SANDBOX}/cFp_HelloThemisto` project as follows:
+```
+  $ cd ${SANDBOX}/cFSP
+    
+  $ ./cfsp image post-app-logic --image_file=${SANDBOX}/cFp_HelloThemisto/dcps/4_topFMKU60_impl_msg-ring-app_pblock_ROLE_partial.bin
+  $ ./cfsp image post-app-logic --image_file=${SANDBOX}/cFp_HelloThemisto/dcps/4_topFMKU60_impl_invertcase-ring-app_pblock_ROLE_partial.bin
+```
+Similarly to the GUI-API procedure, do not forget to write down the image `id` returned by the server 
+(e.g. 'dcd9bb0a-7888-4613-a9d3-319c80fcf6e3'). 
+```
+  0%|                                                                                                                                                                        | 0/1 [00:00<?, ?it/s]INFO: Repeat #0
+  INFO: This json file will be used: ${SANDBOX}/cFp_HelloThemisto/dcps/3_topFMKU60_STATIC.json
+  INFO: No --sig_file provided. Assuming ${SANDBOX}/cFp_HelloThemisto/dcps/4_topFMKU60_impl_msg-ring-app_pblock_ROLE_partial.bin.sig
+  INFO: No --pr_verify_rpt provided. Assuming ${SANDBOX}/cFp_HelloThemisto/dcps/5_topFMKU60_impl_msg-ring-app_pblock_ROLE_partial.rpt
+  {'breed': None,
+   'comment': None,
+   'fpga_board': None,
+   'id': 'dcd9bb0a-7888-4613-a9d3-319c80fcf6e3',
+   'shell_type': None}
+  100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:04<00:00,  4.21s/it]
+```
+```
+  0%|                                                                                                                                                                        | 0/1 [00:00<?, ?it/s]INFO: Repeat #0
+  INFO: This json file will be used: ${SANDBOX}/cFp_HelloThemisto/dcps/3_topFMKU60_STATIC.json
+  INFO: No --sig_file provided. Assuming ${SANDBOX}/cFp_HelloThemisto/dcps/4_topFMKU60_impl_invertcase-ring-app_pblock_ROLE_partial.bin.sig
+  INFO: No --pr_verify_rpt provided. Assuming ${SANDBOX}/cFp_HelloThemisto/dcps/5_topFMKU60_impl_invertcase-ring-app_pblock_ROLE_partial.rpt
+  {'breed': None,
+   'comment': None,
+   'fpga_board': None,
+   'id': 'c5e09074-78fa-4585-8621-d7dd4095d749',
+   'shell_type': None}
+  100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:03<00:00,  3.81s/it
+```
 
-![cFSP-Image-Post-Upload-Res](https://raw.githubusercontent.com/cloudFPGA/cFSP/master/doc/img/4b.png#center)
-
-### Step-9: Request a cloudFPGA cluster and deploy it
+### Step-8: Request a cloudFPGA cluster and deploy it
 
 Now that your FPGA images have been uploaded to the cFRM, you can request a cloudFPGA cluster to
-be programmed and deployed with your images. The below step-9a and step-9b will cover the two available 
-options for creating a new cF cluster.
+be programmed and deployed with your images. The below step-8a and step-8b will cover the two 
+available options for creating a new cF cluster.
 
-#### Step-9a: Create a cluster with the GUI-API
+#### Step-8a: Create a cluster with the GUI-API
 
 To create a new cluster via the GUI-API, point your web browser at
 ```http://10.12.0.132:8080/ui/#/``` and expand the *Swagger* operation 
@@ -292,16 +356,53 @@ accessing your FPGA instances.
 
 ![Swagger-Instances-Post-Request-Res](./DOC/imgs/Img-Swagger-Clusters-POST-Request-Res.png#center)
 
-#### Step-9b: Create a cluster with the cFSP-API
+#### Step-8b: Create a cluster with the cFSP-API
 
 To create a similar cluster via the cFSP-API, enter the following command:
 ```
-    $ ./cfsp cluster post --image_id=7891e291-8847-4302-9b07-248c4feefd69 --image_id=f23b8025-7beb-4662-8d73-30563593ffbe  --node_ip=10.12.2.53
+  $ cd ${SANDBOX}/cFSP
+  
+  $ ./cfsp cluster post --image_id=7891e291-8847-4302-9b07-248c4feefd69 --image_id=f23b8025-7beb-4662-8d73-30563593ffbe --node_ip=10.12.2.53
 ```
 Next, and similarly to the GUI-API procedure, do not forget to write down the two "*role_ip*" 
-returned by the server.
+returned by the server (see example below). 
+```
+  0%|                                                                                                                                                                        | 0/1 [00:00<?, ?it/s]INFO: Repeat #0
+  {'cluster_id': 265,
+   'instances': [{'fpga_board': 'FMKU60',
+                  'image_id': '7891e291-8847-4302-9b07-248c4feefd69',
+                  'instance_id': 88,
+                  'project_name': 'cf_ALL',
+                  'role_ip': '10.12.200.8',
+                  'shell_type': 'NO_SRA',
+                  'slot_num': 26,
+                  'status': 'USED',
+                  'user_id': 'cfdummy'},
+                 {'fpga_board': 'FMKU60',
+                  'image_id': 'f23b8025-7beb-4662-8d73-30563593ffbe',
+                  'instance_id': 41,
+                  'project_name': 'cf_ALL',
+                  'role_ip': '10.12.200.236',
+                  'shell_type': 'NO_SRA',
+                  'slot_num': 21,
+                  'status': 'USED',
+                  'user_id': 'cfdummy'}],
+   'nodes': [{'image_id': '7891e291-8847-4302-9b07-248c4feefd69',
+              'inst_id': 88,
+              'node_id': 0,
+              'node_ip': '10.12.200.8',
+              'slot_num': 26},
+             {'image_id': 'f23b8025-7beb-4662-8d73-30563593ffbe',
+              'inst_id': 41,
+              'node_id': 1,
+              'node_ip': '10.12.200.236',
+              'slot_num': 21},
+             {'image_id': 'NON_FPGA', 'node_id': 2, 'node_ip': '10.12.2.53'}],
+   'user_id': 'cfdummy'}
+  100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [02:58<00:00, 178.31s/it]
+```
 
-### Step-10: How to test the deployed cluster
+### Step-9: How to test the deployed cluster
 
 As mentioned above, the role `msg-ring-app` always forwards the incoming traffic to the 
 next node in the cluster ring without modifying it, while the role `invertcase-ring-app` toggles 
@@ -314,12 +415,12 @@ going over the **UDP/TCP port 2718**, enter the following commands in the two te
 
 Terminal 1 - Set `nc` in TCP transmission mode
 ```  
-  $ ping <IP-FPGA-1>         # w/ IP-FPGA-1 = the IP address of the 1st FPGA (see step-9)
-  $ nc   <IP-FPGA-1> 2718    # Add `-u` for a UDP connection 
+  $ ping <role_ip_1>         # w/ role_ip_1 = the IP address of the 1st FPGA (retrieve at step-8)
+  $ nc   <role_ip_1> 2718    # Add `-u` for a UDP connection 
 ```
 Terminal 2 - Set `nc` in TCP listen mode
 ```  
-  $ ping <IP-FPGA-2>         # w/ IP-FPGA-2 = the IP address of the 2nd FPGA (see step-9)
+  $ ping <role_ip_2>         # w/ role_ip_2 = the IP address of the 2nd FPGA (retreived at step-8)
   $ nc -l 2718               # Add `-u` for a UDP connection
 ```
 
@@ -328,14 +429,14 @@ characters inverted in the 2nd terminal as the following example shows.
 
 ![Demo-of-the cFp_HelloThemisto project](./DOC/imgs/Img-HelloThemisto-Demo.JPG)
 
-:Info: Some firewalls may block network packets if there is not a connection to the remote machine/port. Hence, to get the *HelloThemisto* example to work, the following commands may be necessary to be executed (as root):
+:Info: Some firewalls may block network packets if there is not a connection to the remote machine/port. Hence, to get the *HelloThemisto* example to work, the following commands might be necessary to be executed (as root):
 ```
-        $ firewall-cmd --zone=public --add-port=2718-2750/udp --permanent
-        $ firewall-cmd --zone=public --add-port=2718-2750/tcp --permanent
-        $ firewall-cmd --reload
+  $ firewall-cmd --zone=public --add-port=2718-2750/udp --permanent
+  $ firewall-cmd --zone=public --add-port=2718-2750/tcp --permanent
+  $ firewall-cmd --reload
 ```
 
-### Step-11: For further experiments
+### Step-10: For further experiments
 
 Now that your cluster with one CPU and two FPGAs is operational, you may want to try and deploy a 
 larger cluster at step-9 or extend the size of the current cluster with the 

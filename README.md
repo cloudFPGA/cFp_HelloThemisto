@@ -3,17 +3,16 @@
 A cloudFPGA project built upon the shell **Themisto**.
 
 | :information_source: | The cloudFPGA documentation is available at [https://cloudfpga.github.io/Doc](https://cloudfpga.github.io/Doc/pages/INTRODUCTION/introduction.html)  |
-|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+|:--------------------:|----------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 ## Overview
 
 The integration of a user application and a cloudFPGA shell into a top-level design is what 
 constitutes a [cloudFPGA project](https://cloudfpga.github.io/Doc/pages/PROJECTS/cfprojects.html#).
 
-This *Hello world* project builds on the shell [Themisto](https://github.com/cloudFPGA/cFDK/blob/main/DOC/Themisto.md)
+This project builds on the shell [Themisto](https://github.com/cloudFPGA/cFDK/blob/main/DOC/Themisto.md)
 which is a shell with enhanced routing support for node-to-node communications. It exemplifies
-the creation of a cluster consisting of one CPU and two FPGAs organized in a ring 
-topology.
+the creation of a cluster consisting of one CPU and two FPGAs organized in a ring topology.
 
 This setup is shown in the figure below and the scenario is as follows: a **virtual machine** (VM) 
 sends data to a 1st FPGA (F1) via a UDP and/or a TCP network connection. When F1 is done with the 
@@ -62,21 +61,28 @@ figure. It consists of:
 ![Block diagram of the HelloThemistoTop](./DOC/imgs/Fig-TOP-HelloThemisto.png#center)
 <p align="center">Toplevel block diagram of the cFp_HelloThemisto project</p>
 
+**Info/Warning**
+  * You will be able to generate the FPGA bitstreams of this cluster example project on your 
+    computer but you won't be able to deploy and access the cluster without connecting to the 
+    cloudFPGA infrastructure via VPN. To get such an access granted, you need to request a cloudFPGA 
+    account [here](https://github.com/cloudFPGA/Doc/tree/master/imgs/COMING_SOON.md).  
+  * Next, please note that the following PR build procedure is only compatible with *Vivado* 
+    **2019.2** to **2020.1** versions included (for the time being).
+
 ## How to build the project
 
-The current directory contains the *sra* build script which handles all the required steps to 
+The current directory contains the `sra` build script which handles all the required steps to 
 generate the *partial bitstreams* needed for this project. During the build, both SHELL and 
 ROLE dependencies are analyzed to solely re-compile and re-synthesize the components that 
 must be recreated.
 ```
-  $ SANDBOX=`pwd`  (a short for your working directory)
+  $ SANDBOX=`pwd`           # (a short for your working directory)
 ```
-
-:Info/Warning: To generate the FPGA binary streams for this example cluster on your computer, you must be authorized to access the cloudFPGA infrastructure via VPN. This requires a cloudFPGA account that can be requested [here](https://github.com/cloudFPGA/Doc/tree/master/imgs/COMING_SOON.md).
 
 ### Step-1: Clone and configure the project
 ```
   $ cd ${SANDBOX}
+  
   $ git clone --recursive git@github.com:cloudFPGA/cFp_HelloThemisto.git
   $ cd cFp_HelloThemisto/cFDK
   $ git checkout main

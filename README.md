@@ -427,7 +427,7 @@ Terminal 2 - Set `nc` in TCP listen mode
 You can now type in some text in the 1st terminal, and this text should be echoed back with all its
 characters inverted in the 2nd terminal as the following example shows.
 
-![Demo-of-the cFp_HelloThemisto project](./DOC/imgs/Img-HelloThemisto-Demo.JPG)
+![Demo-of-the cFp_HelloThemisto project](./DOC/imgs/Img-HelloThemisto-Demo.jpg)
 
 :Info: Some firewalls may block network packets if there is not a connection to the remote machine/port. Hence, to get the *HelloThemisto* example to work, the following commands might be necessary to be executed (as root):
 ```

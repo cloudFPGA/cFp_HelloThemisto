@@ -104,7 +104,7 @@ Create a file called `user.json` and add your cloudFPGA credentials in it. The c
 consist of the `username`, the `password` and the `projectname` that were provided to you when 
 you registered.
 ```
-  $ echo "{\"credentials\": {\"username\": \"YOUR_USERNAME\", \"pw\": \"YOUR_PASSWORD\" }, \"project\": \"YOUR_PROJECTNAME\"}" > user.json
+  $ echo "{\"credentials\": {\"username\": \"YOUR_USERNAME\", \"password\": \"YOUR_PASSWORD\" }, \"project\": \"YOUR_PROJECTNAME\"}" > user.json
 ```
 
 ### Step-4: Retrieve the latest static shell

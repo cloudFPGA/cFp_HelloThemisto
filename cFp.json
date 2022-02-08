@@ -16,9 +16,13 @@
             {
                 "name": "invertcase-ring-app",
                 "path": "2/"
+            },
+            {
+                "name": "tst_comm_app",
+                "path": "3/"
             }
         ],
-        "active_role": "msg-ring-app",
+        "active_role": "tst_comm_app",
         "admin": {
             "2nd-role": "invertcase-ring-app"
         }

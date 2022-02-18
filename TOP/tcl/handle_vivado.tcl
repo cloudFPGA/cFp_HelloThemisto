@@ -1045,7 +1045,7 @@ if { $bitGen1 || $bitGen2 || $pr_grey_bitgen } {
           exec /bin/bash ${rootDir}/env/create_sig.sh 4_${topName}_impl_${curImpl}_pblock_ROLE_partial.bin pr_verify.rpt
           #close_project
           # DEBUG probes
-          if { $insert_ila || ([llength [get_cells -quiet -hier -filter REF_NAME==dbg_hub_CV]])} {
+          if { $insert_ila || ([llength [get_cells -quiet -hier -filter REF_NAME==dbg_hub]])} {
             write_debug_probes -force ${dcpDir}/5_${topName}_impl_${curImpl}.ltx
           }
           # write role report
@@ -1072,7 +1072,7 @@ if { $bitGen1 || $bitGen2 || $pr_grey_bitgen } {
         write_bitstream -force ${dcpDir}/4_${topName}_impl_${curImpl}.bit
         #close_project
         # DEBUG probes
-        if { $insert_ila || ([llength [get_cells -quiet -hier -filter REF_NAME==dbg_hub_CV]])} {
+        if { $insert_ila || ([llength [get_cells -quiet -hier -filter REF_NAME==dbg_hub]])} {
           write_debug_probes -force ${dcpDir}/5_${topName}_impl_${curImpl}.ltx
         }
       }
@@ -1094,7 +1094,7 @@ if { $bitGen1 || $bitGen2 || $pr_grey_bitgen } {
         # in both cases: add certificate
         exec /bin/bash ${rootDir}/env/create_sig.sh 4_${topName}_impl_${curImpl}_pblock_ROLE_partial.bin pr_verify.rpt
         # DEBUG probes
-        if { $insert_ila } {
+        if { $insert_ila || ([llength [get_cells -quiet -hier -filter REF_NAME==dbg_hub]])} {
           write_debug_probes -force ${dcpDir}/5_${topName}_impl_${curImpl}.ltx
         }
         # write role report

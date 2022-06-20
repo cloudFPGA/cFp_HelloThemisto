@@ -20,11 +20,11 @@
 -- *
 -- * File    : Role.vhdl
 -- *
--- * Tools   : Vivado v2016.4, v2017.4, v2019.2 (64-bit) 
+-- * Tools   : Vivado v2016.4, v2017.4, v2019.2 (64-bit)
 -- *
--- * Description : In cloudFPGA, the user application is referred to as a 'role'    
+-- * Description : In cloudFPGA, the user application is referred to as a 'role'
 -- *   and is integrated along with a 'shell' that abstracts the HW components
--- *   of the FPGA module. 
+-- *   of the FPGA module.
 -- *   The current role implements 2 typical UDP and TCP applications and pairs
 -- *   paires them with the shell 'Themisto'.
 -- *
@@ -37,7 +37,7 @@ library IEEE;
 use     IEEE.std_logic_1164.all;
 use     IEEE.numeric_std.all;
 
-library UNISIM; 
+library UNISIM;
 use     UNISIM.vcomponents.all;
 
 
@@ -85,7 +85,7 @@ entity Role_Themisto is
     siNRC_Role_Udp_Meta_TREADY  : out   std_ulogic;
     siNRC_Role_Udp_Meta_TKEEP   : in    std_ulogic_vector(  7 downto 0);
     siNRC_Role_Udp_Meta_TLAST   : in    std_ulogic;
-      
+
     ------------------------------------------------------
     -- SHELL / Role / Nts0 / Tcp Interface
     ------------------------------------------------------
@@ -114,11 +114,11 @@ entity Role_Themisto is
     siNRC_Role_Tcp_Meta_TREADY  : out   std_ulogic;
     siNRC_Role_Tcp_Meta_TKEEP   : in    std_ulogic_vector(  7 downto 0);
     siNRC_Role_Tcp_Meta_TLAST   : in    std_ulogic;
-        
+
     --------------------------------------------------------
     -- SHELL / Mem / Mp0 Interface
     --------------------------------------------------------
-    ---- Memory Port #0 / S2MM-AXIS ----------------   
+    ---- Memory Port #0 / S2MM-AXIS ----------------
     ------ Stream Read Command ---------
     soMEM_Mp0_RdCmd_tdata       : out   std_ulogic_vector( 79 downto 0);
     soMEM_Mp0_RdCmd_tvalid      : out   std_ulogic;
@@ -146,8 +146,8 @@ entity Role_Themisto is
     soMEM_Mp0_Write_tkeep       : out   std_ulogic_vector( 63 downto 0);
     soMEM_Mp0_Write_tlast       : out   std_ulogic;
     soMEM_Mp0_Write_tvalid      : out   std_ulogic;
-    soMEM_Mp0_Write_tready      : in    std_ulogic; 
-    
+    soMEM_Mp0_Write_tready      : in    std_ulogic;
+
     --------------------------------------------------------
     -- SHELL / Mem / Mp1 Interface
     --------------------------------------------------------
@@ -189,17 +189,33 @@ entity Role_Themisto is
     -- TOP : Secondary Clock (Asynchronous)
     --------------------------------------------------------
     piTOP_250_00Clk             : in    std_ulogic;  -- Freerunning
-    
+
     ------------------------------------------------
-    -- SMC Interface
-    ------------------------------------------------ 
+    -- FMC Interface
+    ------------------------------------------------
     piFMC_ROLE_rank             : in    std_logic_vector(31 downto 0);
     piFMC_ROLE_size             : in    std_logic_vector(31 downto 0);
-    
+
+    ------------------------------------------------
+    -- DEBUG PORTS (see UG909)
+    ------------------------------------------------
+    dpBSCAN_drck              : IN    std_logic;
+    dpBSCAN_shift             : IN    std_logic;
+    dpBSCAN_tdi               : IN    std_logic;
+    dpBSCAN_update            : IN    std_logic;
+    dpBSCAN_sel               : IN    std_logic;
+    dpBSCAN_tdo               : OUT   std_logic;
+    dpBSCAN_tms               : IN    std_logic;
+    dpBSCAN_tck               : IN    std_logic;
+    dpBSCAN_runtest           : IN    std_logic;
+    dpBSCAN_reset             : IN    std_logic;
+    dpBSCAN_capture           : IN    std_logic;
+    dpBSCAN_bscanid_en        : IN    std_logic;
+
     poVoid                      : out   std_ulogic
 
   );
-  
+
 end Role_Themisto;
 
 
@@ -212,10 +228,40 @@ architecture Flash of Role_Themisto is
   constant cUSE_DEPRECATED_DIRECTIVES       : boolean := false;
 
   --============================================================================
-  --  SIGNAL DECLARATIONS
-  --============================================================================  
+  --  DEBUG SIGNALS ATTRIBUTE DECLARATIONS (see UG909)
+  --============================================================================
+  attribute X_INTERFACE_INFO : string;
+  attribute DEBUG : string;
+  attribute X_INTERFACE_INFO of dpBSCAN_drck: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN drck";
+  attribute DEBUG of dpBSCAN_drck: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_shift: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN shift";
+  attribute DEBUG of dpBSCAN_shift: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_tdi: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN tdi";
+  attribute DEBUG of dpBSCAN_tdi: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_update: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN update";
+  attribute DEBUG of dpBSCAN_update: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_sel: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN sel";
+  attribute DEBUG of dpBSCAN_sel: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_tdo: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN tdo";
+  attribute DEBUG of dpBSCAN_tdo: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_tms: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN tms";
+  attribute DEBUG of dpBSCAN_tms: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_tck: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN tck";
+  attribute DEBUG of dpBSCAN_tck: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_runtest: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN runtest";
+  attribute DEBUG of dpBSCAN_runtest: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_reset: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN reset";
+  attribute DEBUG of dpBSCAN_reset: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_capture: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN capture";
+  attribute DEBUG of dpBSCAN_capture: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_bscanid_en: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN bscanid_en";
+  attribute DEBUG of dpBSCAN_bscanid_en: signal is "true";
 
-  -- I hate Vivado HLS 
+  --============================================================================
+  --  SIGNAL DECLARATIONS
+  --============================================================================
+
+  -- I hate Vivado HLS
   signal sReadTlastAsVector        : std_logic_vector(0 downto 0);
   signal sWriteTlastAsVector       : std_logic_vector(0 downto 0);
   signal sResetAsVector            : std_logic_vector(0 downto 0);
@@ -231,10 +277,10 @@ architecture Flash of Role_Themisto is
   --signal sMemTestDebugOut : std_logic_vector(15 downto 0);
 
   signal sResetApps_n : std_logic;
-  
+
   --============================================================================
   --  VARIABLE DECLARATIONS
-  --============================================================================  
+  --============================================================================
 
   --===========================================================================
   --== COMPONENT DECLARATIONS
@@ -275,17 +321,66 @@ architecture Flash of Role_Themisto is
       siNrc_meta_TREADY       : out std_logic;
       siNrc_meta_TKEEP        : in std_logic_vector (7 downto 0);
       siNrc_meta_TLAST        : in std_logic_vector (0 downto 0);
-      
+
       soNrc_meta_TDATA        : out std_logic_vector (63 downto 0);
       soNrc_meta_TVALID       : out std_logic;
       soNrc_meta_TREADY       : in std_logic;
       soNrc_meta_TKEEP        : out std_logic_vector (7 downto 0);
       soNrc_meta_TLAST        : out std_logic_vector (0 downto 0);
-      
+
       poROL_NRC_Rx_ports_V        : out std_logic_vector (31 downto 0);
       poROL_NRC_Rx_ports_V_ap_vld : out std_logic
     );
   end component TriangleApplication;
+
+  component ila_role_0 is
+    port (
+      clk : IN STD_LOGIC;
+      probe0    : in  std_logic_vector( 63 downto 0);
+      probe1    : in  std_logic_vector(  7 downto 0);
+      probe2    : in  std_logic_vector(  0 downto 0);
+      probe3    : in  std_logic_vector(  0 downto 0);
+      probe4    : in  std_logic_vector(  0 downto 0);
+      probe5    : in  std_logic_vector( 63 downto 0);
+      probe6    : in  std_logic_vector(  7 downto 0);
+      probe7    : in  std_logic_vector(  0 downto 0);
+      probe8    : in  std_logic_vector(  0 downto 0);
+      probe9    : in  std_logic_vector(  0 downto 0);
+      probe10   : in  std_logic_vector( 63 downto 0);
+      probe11   : in  std_logic_vector(  7 downto 0);
+      probe12   : in  std_logic_vector(  0 downto 0);
+      probe13   : in  std_logic_vector(  0 downto 0);
+      probe14   : in  std_logic_vector(  0 downto 0);
+      probe15   : in  std_logic_vector( 63 downto 0);
+      probe16   : in  std_logic_vector(  7 downto 0);
+      probe17   : in  std_logic_vector(  0 downto 0);
+      probe18   : in  std_logic_vector(  0 downto 0);
+      probe19   : in  std_logic_vector(  0 downto 0);
+      probe20   : in  std_logic_vector( 63 downto 0);
+      probe21   : in  std_logic_vector(  7 downto 0);
+      probe22   : in  std_logic_vector(  0 downto 0);
+      probe23   : in  std_logic_vector(  0 downto 0);
+      probe24   : in  std_logic_vector(  0 downto 0);
+      probe25   : in  std_logic_vector( 63 downto 0);
+      probe26   : in  std_logic_vector(  7 downto 0);
+      probe27   : in  std_logic_vector(  0 downto 0);
+      probe28   : in  std_logic_vector(  0 downto 0);
+      probe29   : in  std_logic_vector(  0 downto 0);
+      probe30   : in  std_logic_vector( 63 downto 0);
+      probe31   : in  std_logic_vector(  7 downto 0);
+      probe32   : in  std_logic_vector(  0 downto 0);
+      probe33   : in  std_logic_vector(  0 downto 0);
+      probe34   : in  std_logic_vector(  0 downto 0);
+      probe35   : in  std_logic_vector( 63 downto 0);
+      probe36   : in  std_logic_vector(  7 downto 0);
+      probe37   : in  std_logic_vector(  0 downto 0);
+      probe38   : in  std_logic_vector(  0 downto 0);
+      probe39   : in  std_logic_vector(  0 downto 0);
+      probe40   : in  std_logic_vector( 31 downto 0);
+      probe41   : in  std_logic_vector( 31 downto 0)
+    );
+  end component ila_role_0;
+
 
   --===========================================================================
   --== FUNCTION DECLARATIONS  [TODO-Move to a package]
@@ -323,7 +418,7 @@ begin
   -- to be use as ROLE VERSION IDENTIFICATION --
   poSHL_Mmio_RdReg <= x"BEEF";
 
-  sResetApps_n <= (not piMMIO_Ly7_Rst) and (piMMIO_Ly7_En);  
+  sResetApps_n <= (not piMMIO_Ly7_Rst) and (piMMIO_Ly7_En);
 
   --################################################################################
   --#                                                                              #
@@ -347,7 +442,7 @@ begin
       ap_clk                    => piSHL_156_25Clk,
       --ap_rst_n                  => (not piMMIO_Ly7_Rst),
       ap_rst_n                  => sResetApps_n,
-      
+
       piFMC_ROL_rank_V          => piFMC_ROLE_rank,
       piFMC_ROL_rank_V_ap_vld   => '1',
       piFMC_ROL_size_V          => piFMC_ROLE_size,
@@ -368,19 +463,19 @@ begin
       soNrc_data_TLAST          => soNRC_Udp_Data_tlast,
       soNrc_data_TVALID         => soNRC_Udp_Data_tvalid,
       soNrc_data_TREADY         => soNRC_Udp_Data_tready,
-      
+
       siNrc_meta_TDATA          =>  siNRC_Role_Udp_Meta_TDATA    ,
       siNrc_meta_TVALID         =>  siNRC_Role_Udp_Meta_TVALID   ,
       siNrc_meta_TREADY         =>  siNRC_Role_Udp_Meta_TREADY   ,
       siNrc_meta_TKEEP          =>  siNRC_Role_Udp_Meta_TKEEP    ,
       siNrc_meta_TLAST          =>  sMetaInTlastAsVector_Udp,
-      
+
       soNrc_meta_TDATA          =>  soROLE_Nrc_Udp_Meta_TDATA  ,
       soNrc_meta_TVALID         =>  soROLE_Nrc_Udp_Meta_TVALID ,
       soNrc_meta_TREADY         =>  soROLE_Nrc_Udp_Meta_TREADY ,
       soNrc_meta_TKEEP          =>  soROLE_Nrc_Udp_Meta_TKEEP  ,
       soNrc_meta_TLAST          =>  sMetaOutTlastAsVector_Udp,
-      
+
       poROL_NRC_Rx_ports_V      => poROL_Nrc_Udp_Rx_ports
     );
 
@@ -400,14 +495,14 @@ begin
 
   TAF: TriangleApplication
     port map (
-      
+
       ------------------------------------------------------
       -- From SHELL / Clock and Reset
       ------------------------------------------------------
       ap_clk                    => piSHL_156_25Clk,
       --ap_rst_n                  => (not piMMIO_Ly7_Rst),
       ap_rst_n                  => sResetApps_n,
-      
+
       piFMC_ROL_rank_V          => piFMC_ROLE_rank,
       piFMC_ROL_rank_V_ap_vld   => '1',
       piFMC_ROL_size_V          => piFMC_ROLE_size,
@@ -427,22 +522,75 @@ begin
       soNrc_data_TKEEP          => soNRC_Tcp_Data_tkeep,
       soNrc_data_TLAST          => soNRC_Tcp_Data_tlast,
       soNrc_data_TVALID         => soNRC_Tcp_Data_tvalid,
-      soNrc_data_TREADY         => soNRC_Tcp_Data_tready, 
-      
+      soNrc_data_TREADY         => soNRC_Tcp_Data_tready,
+
       siNrc_meta_TDATA          =>  siNRC_Role_Tcp_Meta_TDATA    ,
       siNrc_meta_TVALID         =>  siNRC_Role_Tcp_Meta_TVALID   ,
       siNrc_meta_TREADY         =>  siNRC_Role_Tcp_Meta_TREADY   ,
       siNrc_meta_TKEEP          =>  siNRC_Role_Tcp_Meta_TKEEP    ,
       siNrc_meta_TLAST          =>  sMetaInTlastAsVector_Tcp,
-      
+
       soNrc_meta_TDATA          =>  soROLE_Nrc_Tcp_Meta_TDATA  ,
       soNrc_meta_TVALID         =>  soROLE_Nrc_Tcp_Meta_TVALID ,
       soNrc_meta_TREADY         =>  soROLE_Nrc_Tcp_Meta_TREADY ,
       soNrc_meta_TKEEP          =>  soROLE_Nrc_Tcp_Meta_TKEEP  ,
       soNrc_meta_TLAST          =>  sMetaOutTlastAsVector_Tcp,
-      
+
       poROL_NRC_Rx_ports_V      => poROL_Nrc_Tcp_Rx_ports
     );
+
+
+  --################################################################################
+  --  Debug Core instantiation
+  --################################################################################
+
+  DBG: ila_role_0
+    port map (
+      clk => piSHL_156_25Clk,
+      probe0      =>   siNRC_Udp_Data_tdata       ,
+      probe1      =>   siNRC_Udp_Data_tkeep       ,
+      probe2(0)   =>   siNRC_Udp_Data_tlast       ,
+      probe3(0)   =>   siNRC_Udp_Data_tvalid      ,
+      probe4(0)   =>   siNRC_Udp_Data_tready      ,
+      probe5      =>   soNRC_Udp_Data_tdata       ,
+      probe6      =>   soNRC_Udp_Data_tkeep       ,
+      probe7(0)   =>   soNRC_Udp_Data_tlast       ,
+      probe8(0)   =>   soNRC_Udp_Data_tvalid      ,
+      probe9(0)   =>   soNRC_Udp_Data_tready      ,
+      probe10     =>   siNRC_Role_Udp_Meta_TDATA  ,
+      probe11     =>   siNRC_Role_Udp_Meta_TKEEP  ,
+      probe12(0)  =>   siNRC_Role_Udp_Meta_TREADY ,
+      probe13(0)  =>   siNRC_Role_Udp_Meta_TVALID ,
+      probe14(0)  =>   siNRC_Role_Udp_Meta_TLAST  ,
+      probe15     =>   soROLE_Nrc_Udp_Meta_TDATA  ,
+      probe16     =>   soROLE_Nrc_Udp_Meta_TKEEP  ,
+      probe17(0)  =>   soROLE_Nrc_Udp_Meta_TREADY ,
+      probe18(0)  =>   soROLE_Nrc_Udp_Meta_TVALID ,
+      probe19(0)  =>   soROLE_Nrc_Udp_Meta_TLAST  ,
+      probe20     =>   siNRC_Tcp_Data_tdata        ,
+      probe21     =>   siNRC_Tcp_Data_tkeep        ,
+      probe22(0)  =>   siNRC_Tcp_Data_tlast        ,
+      probe23(0)  =>   siNRC_Tcp_Data_tvalid       ,
+      probe24(0)  =>   siNRC_Tcp_Data_tready       ,
+      probe25     =>   soNRC_Tcp_Data_tdata        ,
+      probe26     =>   soNRC_Tcp_Data_tkeep        ,
+      probe27(0)  =>   soNRC_Tcp_Data_tlast        ,
+      probe28(0)  =>   soNRC_Tcp_Data_tvalid       ,
+      probe29(0)  =>   soNRC_Tcp_Data_tready       ,
+      probe30     =>   siNRC_Role_Tcp_Meta_TDATA   ,
+      probe31     =>   siNRC_Role_Tcp_Meta_TKEEP   ,
+      probe32(0)  =>   siNRC_Role_Tcp_Meta_TREADY  ,
+      probe33(0)  =>   siNRC_Role_Tcp_Meta_TVALID  ,
+      probe34(0)  =>   siNRC_Role_Tcp_Meta_TLAST   ,
+      probe35     =>   soROLE_Nrc_Tcp_Meta_TDATA   ,
+      probe36     =>   soROLE_Nrc_Tcp_Meta_TKEEP   ,
+      probe37(0)  =>   soROLE_Nrc_Tcp_Meta_TREADY  ,
+      probe38(0)  =>   soROLE_Nrc_Tcp_Meta_TVALID  ,
+      probe39(0)  =>   soROLE_Nrc_Tcp_Meta_TLAST   ,
+      probe40     =>    poROL_Nrc_Udp_Rx_ports,
+      probe41     =>    poROL_Nrc_Tcp_Rx_ports
+    );
+
 
   --################################################################################
   --  1st Memory Port dummy connections

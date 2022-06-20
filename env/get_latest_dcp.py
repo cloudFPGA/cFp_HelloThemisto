@@ -35,7 +35,7 @@ __dcps_folder_name__ = '/dcps/'
 
 __credentials_file_name__ = "user.json"
 
-__openstack_user_template__ = {'credentials': {'user': "your user name", 'pw': "your user password"},
+__openstack_user_template__ = {'credentials': {'username': "your user name", 'password': "your user password"},
                                'project': "default"}
 
 __cf_manager_url__ = "10.12.0.132:8080"
@@ -50,8 +50,8 @@ def load_user_credentials(filedir):
     try:
         with open(json_file, 'r') as infile:
             data = json.load(infile)
-        __openstack_user__ = data['credentials']['user']
-        __openstack_pw__ = data['credentials']['pw']
+        __openstack_user__ = data['credentials']['username']
+        __openstack_pw__ = data['credentials']['password']
         if 'project' in data:
             __openstack_project__ = data['project']
         return 0
@@ -143,6 +143,7 @@ def main():
                   .format(target_file_name, latest_shell_id))
             exit(0)
 
+    print('[cFBuild] Update detected, downloading newest version... (can take some minutes)\n')
     # 4. download if new version available
     download_url = "http://"+cfrm_url+"/composablelogic/"+str(latest_shell_id)+"/dcp" + \
                    "?username={0}&password={1}".format(__openstack_user__, __openstack_pw__)

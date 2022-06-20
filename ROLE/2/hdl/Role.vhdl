@@ -31,7 +31,7 @@ library IEEE;
 use     IEEE.std_logic_1164.all;
 use     IEEE.numeric_std.all;
 
-library UNISIM; 
+library UNISIM;
 use     UNISIM.vcomponents.all;
 
 -- library XIL_DEFAULTLIB;
@@ -116,7 +116,7 @@ entity Role_Themisto is
     --------------------------------------------------------
     -- SHELL / Mem / Mp0 Interface
     --------------------------------------------------------
-    ---- Memory Port #0 / S2MM-AXIS ----------------   
+    ---- Memory Port #0 / S2MM-AXIS ----------------
     ------ Stream Read Command ---------
          soMEM_Mp0_RdCmd_tdata           : out   std_ulogic_vector( 79 downto 0);
          soMEM_Mp0_RdCmd_tvalid          : out   std_ulogic;
@@ -144,7 +144,7 @@ entity Role_Themisto is
          soMEM_Mp0_Write_tkeep           : out   std_ulogic_vector( 63 downto 0);
          soMEM_Mp0_Write_tlast           : out   std_ulogic;
          soMEM_Mp0_Write_tvalid          : out   std_ulogic;
-         soMEM_Mp0_Write_tready          : in    std_ulogic; 
+         soMEM_Mp0_Write_tready          : in    std_ulogic;
 
     --------------------------------------------------------
     -- SHELL / Mem / Mp1 Interface
@@ -189,10 +189,27 @@ entity Role_Themisto is
          piTOP_250_00Clk                     : in    std_ulogic;  -- Freerunning
 
     ------------------------------------------------
-    -- SMC Interface
-    ------------------------------------------------ 
+    -- FMC Interface
+    ------------------------------------------------
          piFMC_ROLE_rank                      : in    std_logic_vector(31 downto 0);
          piFMC_ROLE_size                      : in    std_logic_vector(31 downto 0);
+
+    ------------------------------------------------
+    -- DEBUG PORTS (see UG909)
+    ------------------------------------------------
+    dpBSCAN_drck              : IN    std_logic;
+    dpBSCAN_shift             : IN    std_logic;
+    dpBSCAN_tdi               : IN    std_logic;
+    dpBSCAN_update            : IN    std_logic;
+    dpBSCAN_sel               : IN    std_logic;
+    dpBSCAN_tdo               : OUT   std_logic;
+    dpBSCAN_tms               : IN    std_logic;
+    dpBSCAN_tck               : IN    std_logic;
+    dpBSCAN_runtest           : IN    std_logic;
+    dpBSCAN_reset             : IN    std_logic;
+    dpBSCAN_capture           : IN    std_logic;
+    dpBSCAN_bscanid_en        : IN    std_logic;
+
 
          poVoid                              : out   std_ulogic
 
@@ -202,7 +219,7 @@ end Role_Themisto;
 
 
 -- *****************************************************************************
--- **  ARCHITECTURE  **  FLASH of ROLE 
+-- **  ARCHITECTURE  **  FLASH of ROLE
 -- *****************************************************************************
 
 architecture Flash of Role_Themisto is
@@ -210,13 +227,43 @@ architecture Flash of Role_Themisto is
   constant cUSE_DEPRECATED_DIRECTIVES       : boolean := false;
 
   --============================================================================
+  --  DEBUG SIGNALS ATTRIBUTE DECLARATIONS (see UG909)
+  --============================================================================
+  attribute X_INTERFACE_INFO : string;
+  attribute DEBUG : string;
+  attribute X_INTERFACE_INFO of dpBSCAN_drck: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN drck";
+  attribute DEBUG of dpBSCAN_drck: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_shift: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN shift";
+  attribute DEBUG of dpBSCAN_shift: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_tdi: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN tdi";
+  attribute DEBUG of dpBSCAN_tdi: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_update: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN update";
+  attribute DEBUG of dpBSCAN_update: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_sel: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN sel";
+  attribute DEBUG of dpBSCAN_sel: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_tdo: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN tdo";
+  attribute DEBUG of dpBSCAN_tdo: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_tms: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN tms";
+  attribute DEBUG of dpBSCAN_tms: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_tck: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN tck";
+  attribute DEBUG of dpBSCAN_tck: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_runtest: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN runtest";
+  attribute DEBUG of dpBSCAN_runtest: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_reset: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN reset";
+  attribute DEBUG of dpBSCAN_reset: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_capture: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN capture";
+  attribute DEBUG of dpBSCAN_capture: signal is "true";
+  attribute X_INTERFACE_INFO of dpBSCAN_bscanid_en: signal is "xilinx.com:interface:bscan:1.0 S_BSCAN bscanid_en";
+  attribute DEBUG of dpBSCAN_bscanid_en: signal is "true";
+
+  --============================================================================
   --  SIGNAL DECLARATIONS
-  --============================================================================  
+  --============================================================================
 
 
   -- signal EMIF_inv   : std_logic_vector(7 downto 0);
 
-  -- I hate Vivado HLS 
+  -- I hate Vivado HLS
   signal sReadTlastAsVector : std_logic_vector(0 downto 0);
   signal sWriteTlastAsVector : std_logic_vector(0 downto 0);
   signal sResetAsVector : std_logic_vector(0 downto 0);
@@ -235,7 +282,7 @@ architecture Flash of Role_Themisto is
 
   --============================================================================
   --  VARIABLE DECLARATIONS
-  --============================================================================  
+  --============================================================================
 
   --===========================================================================
   --== COMPONENT DECLARATIONS
@@ -321,8 +368,8 @@ architecture Flash of Role_Themisto is
 
 begin
 
-  --poSHL_Mmio_RdReg <= sMemTestDebugOut when (unsigned(piSHL_Mmio_WrReg) /= 0) else 
-  -- x"BEEF"; 
+  --poSHL_Mmio_RdReg <= sMemTestDebugOut when (unsigned(piSHL_Mmio_WrReg) /= 0) else
+  -- x"BEEF";
   -- to be use as ROLE VERSION IDENTIFICATION --
   poSHL_Mmio_RdReg <= x"1DEA";
 
@@ -342,7 +389,7 @@ begin
 
   -- gUdpAppFlashDepre : if cUSE_DEPRECATED_DIRECTIVES generate --TODO
 
-  --  begin 
+  --  begin
 
   sMetaInTlastAsVector_Udp(0) <= siNRC_Role_Udp_Meta_TLAST;
   soROLE_Nrc_Udp_Meta_TLAST <=  sMetaOutTlastAsVector_Udp(0);
@@ -376,7 +423,7 @@ begin
              soNrc_data_TKEEP     => soNRC_Udp_Data_tkeep,
              soNrc_data_TLAST     => soNRC_Udp_Data_tlast,
              soNrc_data_TVALID    => soNRC_Udp_Data_tvalid,
-             soNrc_data_TREADY    => soNRC_Udp_Data_tready, 
+             soNrc_data_TREADY    => soNRC_Udp_Data_tready,
 
              siNrc_meta_TDATA          =>  siNRC_Role_Udp_Meta_TDATA    ,
              siNrc_meta_TVALID         =>  siNRC_Role_Udp_Meta_TVALID   ,
@@ -409,7 +456,7 @@ begin
 
   -- gUdpAppFlashDepre : if cUSE_DEPRECATED_DIRECTIVES generate --TODO
 
-  --  begin 
+  --  begin
 
   sMetaInTlastAsVector_Tcp(0) <= siNRC_Role_Tcp_Meta_TLAST;
   soROLE_Nrc_Tcp_Meta_TLAST <=  sMetaOutTlastAsVector_Tcp(0);
@@ -443,7 +490,7 @@ begin
              soNrc_data_TKEEP     => soNRC_Tcp_Data_tkeep,
              soNrc_data_TLAST     => soNRC_Tcp_Data_tlast,
              soNrc_data_TVALID    => soNRC_Tcp_Data_tvalid,
-             soNrc_data_TREADY    => soNRC_Tcp_Data_tready, 
+             soNrc_data_TREADY    => soNRC_Tcp_Data_tready,
 
              siNrc_meta_TDATA          =>  siNRC_Role_Tcp_Meta_TDATA    ,
              siNrc_meta_TVALID         =>  siNRC_Role_Tcp_Meta_TVALID   ,

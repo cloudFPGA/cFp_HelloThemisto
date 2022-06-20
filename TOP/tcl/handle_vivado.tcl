@@ -804,10 +804,10 @@ if { ${impl1} || ( $forceWithoutBB && $impl1 ) } {
       #write_checkpoint -force -cell ROLE ${dcpDir}/2P_${topName}_impl_${usedRole}.dcp
 
       my_puts "################################################################################"
-      my_puts "##  DONE WITH 1. IMPLEMENATATION RUN; .dcp SAVED "
+      my_puts "##  DONE WITH 1. IMPLEMENTATION RUN; .dcp SAVED "
     } else {
       my_puts "################################################################################"
-      my_puts "##  DONE WITH IMPLEMENATATION RUN "
+      my_puts "##  DONE WITH IMPLEMENTATION RUN "
       my_dbg_trace "forceWithoutBB is active, so no dcp is saved at this stage." ${dbgLvl_1}
     }
 
@@ -902,7 +902,7 @@ if { $impl2 } {
   #write_checkpoint -force -cell ROLE ${dcpDir}/2P_${topName}_impl_${usedRole2}.dcp
 
   my_puts "################################################################################"
-  my_puts "##  DONE WITH 2. IMPLEMENATATION RUN; .dcp SAVED "
+  my_puts "##  DONE WITH 2. IMPLEMENTATION RUN; .dcp SAVED "
   my_puts "################################################################################"
   my_puts "End at: [clock format [clock seconds] -format {%T %a %b %d %Y}] \n"
 
@@ -932,7 +932,7 @@ if { $pr_grey_impl } {
   write_checkpoint -force ${dcpDir}/3_${topName}_impl_grey_box.dcp
 
   my_puts "################################################################################"
-  my_puts "##  DONE WITH GREYBOX IMPLEMENATATION RUN; .dcp SAVED "
+  my_puts "##  DONE WITH GREYBOX IMPLEMENTATION RUN; .dcp SAVED "
   my_puts "################################################################################"
   my_puts "End at: [clock format [clock seconds] -format {%T %a %b %d %Y}] \n"
 
